@@ -1,3 +1,7 @@
+//
+// booscheme.cpp
+//
+
 #include <iostream>
 #include <stdexcept>
 #include "booscheme.h"
@@ -5,7 +9,7 @@ using namespace std;
 
 void error(const std::string& message)
 {
-    throw std::runtime_error("**** ERROR: " + message);
+    throw std::runtime_error("*** ERROR: " + message);
 }
 
 void warn(const std::string& message)
@@ -137,68 +141,6 @@ boost::any list(boost::any a, boost::any b)
 boost::any list(boost::any a)
 {
     return cons(a, null());
-}
-
-environment::environment(boost::any vars, boost::any vals, Environment parent)
-    : env(), parent(parent)
-{
-    // NOT YET
-}
-
-boost::any
-environment::lookup(Symbol sym)
-{
-    std::map<std::string, boost::any>::iterator iter = env.find(sym->str);
-    if (iter != env.end())
-    {
-        return *iter;
-    }
-    else if (parent.get())
-    {
-        return parent->lookup(sym);
-    }
-    else
-    {
-        // FIXME
-        // "Unbound variable: " + sym->str
-        return null();
-    }
-}
-
-boost::any
-environment::define(boost::any var, boost::any val)
-{
-    try
-    {
-        Symbol sym = boost::any_cast<Symbol>(var);
-        env[sym->str] = val;
-    }
-    catch (const boost::bad_any_cast& e)
-    {
-        // FIXME
-    }
-}
-
-boost::any
-environment::set(boost::any var, boost::any val)
-{
-    try
-    {
-        Symbol sym = boost::any_cast<Symbol>(var);
-        std::map<std::string, boost::any>::iterator iter = env.find(sym->str);
-        if (iter != env.end())
-        {
-            (*iter).second = val;
-        }
-        else
-        {
-            // FIXME error
-        }
-    }
-    catch (const boost::bad_any_cast& e)
-    {
-        // FIXME FIXME error
-    }
 }
 
 int main()

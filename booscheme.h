@@ -33,21 +33,6 @@ typedef boost::shared_ptr<std::string> String;
 // typedef boost::shared_ptr<char> Char; // FIXME
 typedef boost::shared_ptr<symbol> Symbol;
 typedef boost::shared_ptr<std::vector<boost::any> > Vector;
-
 typedef boost::shared_ptr<environment> Environment;
 
-class environment
-{
-private:
-    std::map<std::string, boost::any> env;
-    Environment parent;
-
-public:
-    environment() : env(), parent() {}
-    environment(boost::any vars, boost::any vals, Environment parent);
-    ~environment() {}
-
-    boost::any lookup(Symbol sym);
-    boost::any define(boost::any var, boost::any val);
-    boost::any set(boost::any var, boost::any val);
-};
+Empty null();
