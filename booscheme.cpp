@@ -143,6 +143,66 @@ boost::any list(boost::any a)
     return cons(a, null());
 }
 
+void stringify(boost::any x, bool quoted, std::string& buf)
+{
+    if (x.type() == typeid(Empty))
+    {
+        buf.append("()");
+    }
+    else if (x.type() == typeid(Number))
+    {
+        // NOT YET
+    }
+    else if (x.type() == typeid(Char))
+    {
+        if (quoted) buf.append("#\\");
+        buf.append(std::string(1, *(boost::any_cast<Char>(x))));
+    }
+    else if (x.type() == typeid(Pair))
+    {
+        // NOT YET
+    }
+    else if (x.type() == typeid(String))
+    {
+        buf.append(*(boost::any_cast<String>(x)));
+    }
+    else if (x.type() == typeid(Vector))
+    {
+        // NOT YET
+    }
+    else if (x.type() == typeid(bool))
+    {
+        if (boost::any_cast<bool>(x))
+        {
+            buf.append("#t");
+        }
+        else
+        {
+            buf.append("#f");
+        }
+    }
+    else if (x.type() == typeid(Symbol))
+    {
+        buf.append(boost::any_cast<Symbol>(x)->str);
+    }
+    else
+    {
+        // error
+    }
+}
+
+std::string stringify(boost::any x, bool quoted)
+{
+    std::string str;
+    stringify(x, quoted, str);
+    return str;
+}
+
+std::string stringify(boost::any x)
+{
+    return stringify(x, true);
+}
+
 int main()
 {
     Pair pp = cons(String(new string("foo")), 3);

@@ -28,11 +28,13 @@ class environment;
 
 typedef boost::shared_ptr<std::pair<boost::any, boost::any> > Pair;
 typedef boost::shared_ptr<empty>  Empty;
-// typedef boost::shared_ptr<int> Number; // FIXME
+typedef boost::shared_ptr<int> Number; // FIXME
 typedef boost::shared_ptr<std::string> String;
-// typedef boost::shared_ptr<char> Char; // FIXME
+typedef boost::shared_ptr<char> Char; // FIXME
 typedef boost::shared_ptr<symbol> Symbol;
 typedef boost::shared_ptr<std::vector<boost::any> > Vector;
 typedef boost::shared_ptr<environment> Environment;
 
 Empty null();
+std::string stringify(boost::any x, bool quoted);
+std::string stringify(boost::any x);
