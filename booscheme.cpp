@@ -250,8 +250,10 @@ std::string stringify(boost::any x)
     return stringify(x, true);
 }
 
-int main()
+void test1()
 {
+    cout << "### test1 ###" << endl;
+
     Pair pp = cons(String(new string("foo")), 3);
 
     cout << *(boost::any_cast<String>(pp->first)) << endl;
@@ -276,12 +278,26 @@ int main()
     {
         cout << "second is int" << endl;
     }
+}
+
+void test2()
+{
+    cout << "### test2 ###" << endl;
 
     boost::any x = Symbol(new symbol("bar"));
     cout << boost::any_cast<Symbol>(x)->str << endl;
 
+    cout << "HERE #1" << endl;
+
     x = Symbol(new symbol("hoge"));
     cout << boost::any_cast<Symbol>(x)->str << endl;    
+
+    cout << "HERE #2" << endl;
+}
+
+void test3()
+{
+    cout << "### test3 ###" << endl;
 
     boost::any foo = Symbol(new symbol("foo"));
     boost::any bar = Symbol(new symbol("bar"));
@@ -289,4 +305,11 @@ int main()
     
     cout << stringify(cons(foo, bar)) << endl;
     cout << stringify(cons(foo, cons(bar, nil))) << endl;
+}
+
+int main()
+{
+    test1();
+    test2();
+    test3();
 }
