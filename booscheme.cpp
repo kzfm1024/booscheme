@@ -66,7 +66,7 @@ String str(boost::any x)
     }
     catch (const boost::bad_any_cast& e)
     {
-        // FIXME
+        return String(new std::string); // FIXME
     }
 }
 
@@ -143,6 +143,9 @@ boost::any list(boost::any a)
     return cons(a, null());
 }
 
+static void stringify(boost::any x, bool quoted, std::string& buf);
+static void stringifyPair(Pair p, bool quoted, std::string& buf);
+
 void stringify(boost::any x, bool quoted, std::string& buf)
 {
     if (x.type() == typeid(Empty))
@@ -160,7 +163,7 @@ void stringify(boost::any x, bool quoted, std::string& buf)
     }
     else if (x.type() == typeid(Pair))
     {
-        // NOT YET
+        stringifyPair(boost::any_cast<Pair>(x), quoted, buf);
     }
     else if (x.type() == typeid(String))
     {
@@ -188,6 +191,50 @@ void stringify(boost::any x, bool quoted, std::string& buf)
     else
     {
         // error
+    }
+}
+
+void stringifyPair(Pair p, bool quoted, std::string& buf)
+{
+    std::string special;
+
+    if ((p->second.type() == typeid(Pair)) &&
+        rest(p->second).type() == typeid(Empty))
+    {
+        //
+        // FIXME もう少し考える必要あり
+        //
+        std::string first = *str(p->first);
+        special = (first == "quote") ? "'" : (first == "quasiquote") ? "`"
+            : (first == "unquote") ? "," : (first == "unquote-splicing") ? ",@"
+            : "";
+    }
+
+    if (special.size())
+    {
+        buf.append(special);
+        stringify(second(p), quoted, buf);
+    }
+    else
+    {
+        buf.append("(");
+        stringify(p->first, quoted, buf);
+
+        boost::any tail = p->second;
+        while (tail.type() == typeid(Pair))
+        {
+            buf.append(" ");
+            stringify(boost::any_cast<Pair>(tail)->first, quoted, buf);
+            tail = boost::any_cast<Pair>(tail)->second;
+        }
+        
+        if (tail.type() != typeid(Empty))
+        {
+            buf.append(" . ");
+            stringify(tail, quoted, buf);
+        }
+
+        buf.append(")");
     }
 }
 
@@ -230,17 +277,16 @@ int main()
         cout << "second is int" << endl;
     }
 
-#if 0
-    Symbol sym = Symbol(new symbol("bar"));
-    cout << sym->str << endl;    
-
-    sym = Symbol(new symbol("hoge"));
-    cout << sym->str << endl;    
-#else
     boost::any x = Symbol(new symbol("bar"));
     cout << boost::any_cast<Symbol>(x)->str << endl;
 
     x = Symbol(new symbol("hoge"));
     cout << boost::any_cast<Symbol>(x)->str << endl;    
-#endif
+
+    boost::any foo = Symbol(new symbol("foo"));
+    boost::any bar = Symbol(new symbol("bar"));
+    boost::any nil = Empty(new empty);
+    
+    cout << stringify(cons(foo, bar)) << endl;
+    cout << stringify(cons(foo, cons(bar, nil))) << endl;
 }
