@@ -8,5 +8,5 @@ all:
 	g++ ${INCLUDES} ${CPPFLAGS} test.o environment.o utils.o
 
 clean:
-	rm -f a.out *~
+	rm -f a.out *.o *~
 	rm -rf a.out.dSYM
