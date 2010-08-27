@@ -1,11 +1,10 @@
 //
-// booscheme.cpp
+// utils.cpp
 //
 
 #include <iostream>
 #include <stdexcept>
 #include "booscheme.h"
-using namespace std;
 
 void error(const std::string& message)
 {
@@ -143,10 +142,9 @@ boost::any list(boost::any a)
     return cons(a, null());
 }
 
-static void stringify(boost::any x, bool quoted, std::string& buf);
 static void stringifyPair(Pair p, bool quoted, std::string& buf);
 
-void stringify(boost::any x, bool quoted, std::string& buf)
+static void stringify(boost::any x, bool quoted, std::string& buf)
 {
     if (x.type() == typeid(Empty))
     {
@@ -194,7 +192,7 @@ void stringify(boost::any x, bool quoted, std::string& buf)
     }
 }
 
-void stringifyPair(Pair p, bool quoted, std::string& buf)
+static void stringifyPair(Pair p, bool quoted, std::string& buf)
 {
     std::string special;
 
@@ -253,68 +251,4 @@ std::string stringify(boost::any x, bool quoted)
 std::string stringify(boost::any x)
 {
     return stringify(x, true);
-}
-
-void test1()
-{
-    cout << "### test1 ###" << endl;
-
-    Pair pp = cons(String(new string("foo")), 3);
-
-    cout << *(boost::any_cast<String>(pp->first)) << endl;
-    cout << boost::any_cast<int>(pp->second) << endl;
-
-    if (pp->first.type() == typeid(String))
-    {
-        cout << "first is String" << endl;
-    }
-
-    if (pp->first.type() == typeid(int))
-    {
-        cout << "first is int" << endl;
-    }
-
-    if (pp->second.type() == typeid(String))
-    {
-        cout << "second is String" << endl;
-    }
-
-    if (pp->second.type() == typeid(int))
-    {
-        cout << "second is int" << endl;
-    }
-}
-
-void test2()
-{
-    cout << "### test2 ###" << endl;
-
-    boost::any x = Symbol(new symbol("bar"));
-    cout << boost::any_cast<Symbol>(x)->str << endl;
-
-    cout << "HERE #1" << endl;
-
-    x = Symbol(new symbol("hoge"));
-    cout << boost::any_cast<Symbol>(x)->str << endl;    
-
-    cout << "HERE #2" << endl;
-}
-
-void test3()
-{
-    cout << "### test3 ###" << endl;
-
-    boost::any foo = Symbol(new symbol("foo"));
-    boost::any bar = Symbol(new symbol("bar"));
-    boost::any nil = Empty(new empty);
-    
-    cout << stringify(cons(foo, bar)) << endl;
-    cout << stringify(cons(foo, cons(bar, nil))) << endl;
-}
-
-int main()
-{
-    test1();
-    test2();
-    test3();
 }
