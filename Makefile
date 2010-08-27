@@ -1,5 +1,5 @@
 INCLUDES = -I/usr/local/boost_1_44_0
-CPPFLAGS = -D_BOOSCHEME_DEBUG_
+CPPFLAGS = -g -D_BOOSCHEME_DEBUG_
 
 all:
 	g++ ${INCLUDES} ${CPPFLAGS} -c utils.cpp
