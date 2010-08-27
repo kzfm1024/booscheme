@@ -66,7 +66,7 @@ String str(boost::any x)
     }
     catch (const boost::bad_any_cast& e)
     {
-        return String(new std::string); // FIXME
+        // FIXME
     }
 }
 
@@ -201,13 +201,18 @@ void stringifyPair(Pair p, bool quoted, std::string& buf)
     if ((p->second.type() == typeid(Pair)) &&
         rest(p->second).type() == typeid(Empty))
     {
-        //
-        // FIXME もう少し考える必要あり
-        //
-        std::string first = *str(p->first);
-        special = (first == "quote") ? "'" : (first == "quasiquote") ? "`"
-            : (first == "unquote") ? "," : (first == "unquote-splicing") ? ",@"
-            : "";
+        try
+        {
+            Symbol sym = boost::any_cast<Symbol>(p->first);
+            if      (!sym->str.compare("quote"))            { special = "'";  }
+            else if (!sym->str.compare("quasiquote"))       { special = "`";  }
+            else if (!sym->str.compare("unquote"))          { special = ",";  }
+            else if (!sym->str.compare("unquote-splicing")) { special = ",@"; }
+        }
+        catch (const boost::bad_any_cast& e)
+        {
+            ; // do nothing
+        }   
     }
 
     if (special.size())
