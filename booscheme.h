@@ -22,7 +22,6 @@ class empty
 {
 };
 
-
 class symbol
 {
 public:
@@ -44,7 +43,38 @@ typedef boost::shared_ptr<symbol> Symbol;
 typedef boost::shared_ptr<std::vector<boost::any> > Vector;
 typedef boost::shared_ptr<environment> Environment;
 
+class environment
+{
+public:
+    environment() : env(), parent() {}
+    environment(boost::any vars, boost::any vals, Environment parent);
+    ~environment() {}
+
+    boost::any lookup(Symbol sym);
+    boost::any define(boost::any var, boost::any val);
+    boost::any set(boost::any var, boost::any val);
+
+private:
+    std::map<std::string, boost::any> env;
+    Environment parent;
+};
+
+void error(const std::string& message);
+void warn(const std::string& message);
 Empty null();
+bool truth(boost::any x);
+int num(boost::any x);
+char chr(boost::any x);
+String str(boost::any x);
+Pair cons(boost::any a, boost::any b);
+boost::any first(boost::any x);
+boost::any rest(boost::any x);
+boost::any setFirst(boost::any x, boost::any y);
+boost::any setRest(boost::any x, boost::any y);
+boost::any second(boost::any x);
+boost::any third(boost::any x);
+boost::any list(boost::any a, boost::any b);
+boost::any list(boost::any a);
 std::string stringify(boost::any x, bool quoted);
 std::string stringify(boost::any x);
 
