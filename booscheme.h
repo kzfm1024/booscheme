@@ -43,14 +43,19 @@ public:
 
     boost::any readChar();
     boost::any peekChar();
-    int peekCh();
     boost::any read();
+
+    static std::string eof;        // FIXME
+    static bool isEOF(boost::any); // FIXME
     
 private:
+    int peekCh();
     int pushChar(int ch);
     int popChar();
 
-    static std::string eof;     // FIXME
+    boost::any readTail();
+    boost::any nextToken();
+
     bool          isPushedToken;
     bool          isPushedChar;
     boost::any    pushedToken;
