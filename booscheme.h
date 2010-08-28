@@ -5,6 +5,7 @@
 #ifndef _BOOSCHEME_H
 #define _BOOSCHEME_H
 
+#include <iostream>
 #include <string>
 #include <map>
 #include <vector>
@@ -30,6 +31,32 @@ public:
     
 public:
     const std::string str;
+};
+
+class input_port
+{
+public:
+    input_port(std::istream& is)
+        : isPushedToken(false), isPushedChar(false),
+          pushedToken(), pushedChar(-1), in(is), buff() {}
+    ~input_port() {}
+
+    boost::any readChar();
+    boost::any peekChar();
+    int peekCh();
+    boost::any read();
+    
+private:
+    int pushChar(int ch);
+    int popChar();
+
+    static std::string eof;     // FIXME
+    bool          isPushedToken;
+    bool          isPushedChar;
+    boost::any    pushedToken;
+    int           pushedChar;
+    std::istream& in;
+    std::string   buff;
 };
 
 class environment;
