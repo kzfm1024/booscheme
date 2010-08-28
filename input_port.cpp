@@ -74,6 +74,7 @@ boost::any input_port::readTail()
 boost::any input_port::nextToken()
 {
     char ch;
+    std::string msg;
 
     if (isPushedToken)
     {
@@ -104,10 +105,83 @@ boost::any input_port::nextToken()
         in >> ch;
         if (ch == '@') return Symbol(new symbol(",@"));
         else { pushChar(static_cast<int>(ch)); return Symbol(new symbol(",")); }
-    case ';':
+    case ';': // Comment: skip to end of line and then read next token
         while (!in.eof() && ch != '\n' && ch != '\r') in >> ch;
         return nextToken();
     case '"': // String
-        ; // NOT YET
+        buff.clear();
+        in >> ch;
+        while (ch != '"' && !in.eof())
+        {
+            if (ch == '\\') in >> ch;
+            buff.append(1, ch);
+            in >> ch;
+        }
+        if (in.eof()) warn("EOF inside of a string.");
+        return String(new std::string(buff));
+    case '#':
+        in >> ch;
+        switch (ch)
+        {
+        case 't': case 'T': return true;
+        case 'f': case 'F': return false;
+        case '(': // Vector
+            pushChar('(');
+            // return listToVector(read());
+            return read(); // FIXME
+        case '\\': // Char
+            in >> ch;
+            if (ch == 's' || ch == 'S' || ch == 'n' || ch == 'N')
+            {
+                pushChar(ch);
+                boost::any token = nextToken();
+                try
+                {
+                    Symbol sym = boost::any_cast<Symbol>(token);
+                    if (!sym->str.compare("space")) return chr(' ');
+                    if (!sym->str.compare("newline")) return chr('\n');
+                }
+                catch (const boost::bad_any_cast& e)
+                {
+                    ; // do nothing                    
+                }
+
+                isPushedToken = true;
+                pushedToken = token;
+                return chr(ch);
+            }
+            else
+            {
+                return chr(ch);
+            }
+        case 'e': case 'i': case 'd': 
+        case 'b': case 'o': case 'x':
+            msg.assign("#");
+            msg.append(1, ch);
+            msg.append(" not implemented, ignored.");
+            warn(msg);
+            return nextToken();
+        default:
+            msg.assign("#");
+            msg.append(1, ch);
+            msg.append(" not recognized, ignored.");
+            return nextToken();
+        }
+    default:
+        buff.clear();
+        char c = ch;
+        do
+        {
+            buff.append(1, ch);
+            in >> ch;
+        } while (!in.eof() &&
+                 ch != ' ' && ch != '\t' && ch != '\n' && ch != '\r' &&
+                 ch != '(' && ch != ')' && ch != '\'' && ch != ';' &&
+                 ch != '"' && ch != ',' && ch != '`');
+        pushChar(ch);
+        //
+        // FIXME 数字への変換を試みる
+        // 
+        return Symbol(new symbol(buff));
     }
 }

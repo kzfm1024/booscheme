@@ -27,6 +27,7 @@ class symbol
 {
 public:
     symbol(const char* s) : str(s) {}
+    symbol(const std::string& s) : str(s) {}
     ~symbol() { DEBUG(std::cout << "~symbol " << str << std::endl); }
     
 public:
