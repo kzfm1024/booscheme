@@ -4,7 +4,10 @@
 
 #include "booscheme.h"
 
-std::string input_port::eof("#!EOF"); // FIXME
+bool input_port::isEOF(boost::any x)
+{
+    return (x.type() == typeid(end_of_file)) ? true : false;
+}
 
 // Read and return a Scheme character or EOF.
 boost::any input_port::readChar()
@@ -68,6 +71,7 @@ boost::any input_port::read()
 
 boost::any input_port::readTail()
 {
+    
 
 }
 

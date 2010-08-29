@@ -23,6 +23,10 @@ class empty
 {
 };
 
+class end_of_file
+{
+};
+
 class symbol
 {
 public:
@@ -42,14 +46,15 @@ public:
           pushedToken(), pushedChar(-1), in(is), buff() {}
     ~input_port() {}
 
+    static bool isEOF(boost::any x);
+
     boost::any readChar();
     boost::any peekChar();
     boost::any read();
-
-    static std::string eof;        // FIXME
-    static bool isEOF(boost::any); // FIXME
     
 private:
+    static end_of_file eof;
+
     int peekCh();
     int pushChar(int ch);
     int popChar();
