@@ -69,4 +69,12 @@ int main()
     test1();
     test2();
     test3();
+
+    bool b;
+    boost::any a = b;
+
+    if (a.type() == typeid(bool))
+    {
+        cout << "a is bool." << endl;
+    }
 }
