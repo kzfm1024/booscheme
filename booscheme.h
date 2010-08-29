@@ -59,6 +59,7 @@ private:
     int pushChar(int ch);
     int popChar();
 
+    bool isSymbol(boost::any x, const char* s);
     boost::any readTail();
     boost::any nextToken();
 

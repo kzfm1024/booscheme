@@ -64,15 +64,85 @@ int input_port::popChar()
 
 boost::any input_port::read()
 {
-    
+    boost::any token = nextToken();
 
+    if (isSymbol(token, ")"))
+    {
+        return readTail();
+    }
+    else if (isSymbol(token, ")"))
+    {
+        warn("Extra ) ignored.");
+        return read();
+    }
+    else if (isSymbol(token, "."))
+    {
+        warn("Extra . ignored.");
+        return read();
+    }
+    else if (isSymbol(token, "'"))
+    {
+        return list(Symbol(new symbol("quote")), read());
+    }
+    else if (isSymbol(token, "`"))
+    {
+        return list(Symbol(new symbol("quasiquote")), read());
+    }
+    else if (isSymbol(token, ","))
+    {
+        return list(Symbol(new symbol("unquote")), read());
+    }
+    else if (isSymbol(token, ",@"))
+    {
+        return list(Symbol(new symbol("unquote-splicing")), read());
+    }
+    else
+    {
+        return token;
+    }
+}
 
+bool input_port::isSymbol(boost::any x, const char* s)
+{
+    try
+    {
+        Symbol sym = boost::any_cast<Symbol>(x);
+        return !sym->str.compare(s) ? true : false;
+    }
+    catch (const boost::bad_any_cast& e)
+    {
+        return false;
+    }
 }
 
 boost::any input_port::readTail()
 {
-    
-
+    boost::any token = nextToken();
+    if (token.type() == typeid(end_of_file))
+    {
+        error("EOF during read.");
+        return eof;
+    }
+    else if (isSymbol(token, ")"))
+    {
+        return null();
+    }
+    else if (isSymbol(token, "."))
+    {
+        boost::any result = read();
+        token = nextToken();
+        if (!isSymbol(token, ")")) 
+        {
+            warn("Where's the ')'? Got xxx after ."); // FIXME
+        }
+        return result;
+    }
+    else
+    {
+        isPushedToken = true;
+        pushedToken = token;
+        return cons(read(), readTail());
+    }
 }
 
 boost::any input_port::nextToken()
@@ -97,8 +167,9 @@ boost::any input_port::nextToken()
     // Skip whitespace
     while (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r') in >> ch;
 
+    if (in.bad()) error("IO stream corrupted");
     if (in.eof()) return eof;
-
+    
     switch (ch)
     {
     case '(' : return Symbol(new symbol("("));
@@ -139,20 +210,20 @@ boost::any input_port::nextToken()
             {
                 pushChar(ch);
                 boost::any token = nextToken();
-                try
+                if (isSymbol(token, "space"))
                 {
-                    Symbol sym = boost::any_cast<Symbol>(token);
-                    if (!sym->str.compare("space")) return chr(' ');
-                    if (!sym->str.compare("newline")) return chr('\n');
+                    return chr(' ');
                 }
-                catch (const boost::bad_any_cast& e)
+                else if (isSymbol(token, "newline"))
                 {
-                    ; // do nothing                    
+                    return chr('\n');
                 }
-
-                isPushedToken = true;
-                pushedToken = token;
-                return chr(ch);
+                else
+                {
+                    isPushedToken = true;
+                    pushedToken = token;
+                    return chr(ch);
+                }
             }
             else
             {
