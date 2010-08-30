@@ -4,6 +4,8 @@
 
 #include "booscheme.h"
 
+end_of_file input_port::eof;
+
 bool input_port::isEOF(boost::any x)
 {
     return (x.type() == typeid(end_of_file)) ? true : false;
