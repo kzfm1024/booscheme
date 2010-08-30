@@ -71,6 +71,18 @@ private:
     std::string   buff;
 };
 
+class output_port
+{
+public:
+    output_port(std::ostream& os) : out(os) {}
+    ~output_port() {}
+    
+    void write(const std::string& s);
+
+private:
+    std::ostream& out;
+};
+
 class environment;
 
 typedef boost::shared_ptr<std::pair<boost::any, boost::any> > Pair;
