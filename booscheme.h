@@ -93,6 +93,8 @@ typedef boost::shared_ptr<char> Char; // FIXME
 typedef boost::shared_ptr<symbol> Symbol;
 typedef boost::shared_ptr<std::vector<boost::any> > Vector;
 typedef boost::shared_ptr<environment> Environment;
+typedef boost::shared_ptr<input_port> InputPort;
+typedef boost::shared_ptr<output_port> OutputPort;
 
 class environment
 {
