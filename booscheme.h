@@ -119,7 +119,7 @@ bool truth(boost::any x);
 int num(boost::any x);
 char chr(boost::any x);
 String str(boost::any x);
-Pair cons(boost::any a, boost::any b);
+
 boost::any first(boost::any x);
 boost::any rest(boost::any x);
 boost::any setFirst(boost::any x, boost::any y);
@@ -128,7 +128,15 @@ boost::any second(boost::any x);
 boost::any third(boost::any x);
 boost::any list(boost::any a, boost::any b);
 boost::any list(boost::any a);
+boost::any listStar(boost::any args);
+Pair cons(boost::any a, boost::any b);
+boost::any reverse(boost::any x);
+int length(boost::any x);
 std::string stringify(boost::any x, bool quoted);
 std::string stringify(boost::any x);
+boost::any p(boost::any x);
+boost::any p(const std::string& msg, boost::any x);
+
+// bool isSymbol(boost::any x, const char* s);
 
 #endif // _BOOSCHEME_H

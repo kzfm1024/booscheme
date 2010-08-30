@@ -69,10 +69,12 @@ String str(boost::any x)
     }
 }
 
-Pair cons(boost::any a, boost::any b)
-{
-    return Pair(new std::pair<boost::any, boost::any>(a, b));
-}
+//
+// NOT YET
+// vec()
+// inPort()
+// outPort()
+//
 
 boost::any first(boost::any x)
 {
@@ -141,6 +143,53 @@ boost::any list(boost::any a)
 {
     return cons(a, null());
 }
+
+boost::any listStar(boost::any args)
+{
+    if (rest(args).type() == typeid(Empty)) return first(args);
+    else return cons(first(args), listStar(rest(args)));
+}
+
+Pair cons(boost::any a, boost::any b)
+{
+    return Pair(new std::pair<boost::any, boost::any>(a, b));
+}
+
+boost::any reverse(boost::any x)
+{
+    boost::any result = null();
+    while (x.type() == typeid(Pair))
+    {
+        result = cons(first(x), result);
+        x = rest(x);
+    }
+    return result;
+}
+
+// equal()
+// eqv()
+
+int length(boost::any x)
+{
+    int len = 0;
+    while (x.type() == typeid(Pair))
+    {
+        len++;
+        x = rest(x);
+    }
+    return len;
+}
+
+// listToString()
+// listToVector()
+
+boost::any write(boost::any x, OutputPort port, bool quoted)
+{
+    port->write(stringify(x, quoted));
+    return x;
+}
+
+// vectorToList()
 
 static void stringifyPair(Pair p, bool quoted, std::string& buf);
 
@@ -252,3 +301,28 @@ std::string stringify(boost::any x)
 {
     return stringify(x, true);
 }
+        
+boost::any p(boost::any x)
+{
+    std::cout << stringify(x) << std::endl << std::flush;
+}
+
+boost::any p(const std::string& msg, boost::any x)
+{
+    std::cout << msg << ": " << stringify(x) << std::endl << std::flush;
+}
+
+/*
+bool isSymbol(boost::any x, const char* s)
+{
+    try
+    {
+        Symbol sym = boost::any_cast<Symbol>(x);
+        return !sym->str.compare(s) ? true : false;
+    }
+    catch (const boost::bad_any_cast& e)
+    {
+        return false;
+    }
+}
+*/
