@@ -180,16 +180,54 @@ int length(boost::any x)
     return len;
 }
 
-// listToString()
-// listToVector()
+boost::any listToString(boost::any chars)
+{
+    String str = String(new std::string());
+    for (int i = 0; chars.type() == typeid(Pair); i++)
+    {
+        str->append(1, chr(first(chars)));
+        chars = rest(chars);
+    }
+
+    return str;
+}
+
+boost::any listToVector(boost::any objs)
+{
+    Vector vec = Vector(new std::vector<boost::any>(length(objs)));
+    for (int i = 0; objs.type() == typeid(Pair); i++)
+    {
+        vec->at(i) = first(objs);
+        objs = rest(objs);
+    }
+
+    return vec;
+}
+
+boost::any vectorToList(boost::any x)
+{
+    if (x.type() == typeid(Vector))
+    {
+        Vector vec = boost::any_cast<Vector>(x);
+        boost::any result = null();
+        for (int i = vec->size() - 1; i >= 0; i--)
+        {
+            result = cons(vec->at(i), result);
+        }
+        return result;
+    }
+    else
+    {
+        // NOT YET: error
+        return null();
+    }
+}
 
 boost::any write(boost::any x, OutputPort port, bool quoted)
 {
     port->write(stringify(x, quoted));
     return x;
 }
-
-// vectorToList()
 
 static void stringifyPair(Pair p, bool quoted, std::string& buf);
 
