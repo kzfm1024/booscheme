@@ -10,8 +10,7 @@ environment::environment(boost::any vars, boost::any vals, Environment parent)
     // NOT YET
 }
 
-boost::any
-environment::lookup(Symbol sym)
+boost::any environment::lookup(Symbol sym)
 {
     std::map<std::string, boost::any>::iterator iter = env.find(sym->str);
     if (iter != env.end())
@@ -30,8 +29,7 @@ environment::lookup(Symbol sym)
     }
 }
 
-boost::any
-environment::define(boost::any var, boost::any val)
+boost::any environment::define(boost::any var, boost::any val)
 {
     try
     {
@@ -44,8 +42,7 @@ environment::define(boost::any var, boost::any val)
     }
 }
 
-boost::any
-environment::set(boost::any var, boost::any val)
+boost::any environment::set(boost::any var, boost::any val)
 {
     try
     {
@@ -64,4 +61,12 @@ environment::set(boost::any var, boost::any val)
     {
         // FIXME FIXME error
     }
+}
+
+bool environment::numberArgsOK(boost::any vars, boost::any vals)
+{
+    return ((vars.type() == typeid(Empty) && vals.type() == typeid(Empty)) ||
+            (vars.type() == typeid(String)) ||
+            (vars.type() == typeid(Pair) && vals.type() == typeid(Pair) &&
+             numberArgsOK(rest(vars), rest(vals))));
 }

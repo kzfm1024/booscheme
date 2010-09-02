@@ -106,6 +106,7 @@ public:
     boost::any lookup(Symbol sym);
     boost::any define(boost::any var, boost::any val);
     boost::any set(boost::any var, boost::any val);
+    bool numberArgsOK(boost::any vars, boost::any vals);
 
 private:
     std::map<std::string, boost::any> env;
