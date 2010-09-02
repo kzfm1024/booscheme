@@ -1,14 +1,19 @@
-INCLUDES = -I/usr/local/boost_1_44_0
-CPPFLAGS = -g -D_BOOSCHEME_DEBUG_
+CXX			= g++
+CXXFLAGS	= \
+	-I/usr/local/boost_1_44_0 \
+	-g \
+	-D_BOOSCHEME_DEBUG_
 
-all:
-	g++ ${INCLUDES} ${CPPFLAGS} -c utils.cpp
-	g++ ${INCLUDES} ${CPPFLAGS} -c input_port.cpp
-	g++ ${INCLUDES} ${CPPFLAGS} -c output_port.cpp
-	g++ ${INCLUDES} ${CPPFLAGS} -c environment.cpp
-	g++ ${INCLUDES} ${CPPFLAGS} -c test.cpp
-	g++ ${INCLUDES} ${CPPFLAGS} test.o environment.o output_port.o input_port.o utils.o
+TARGET	= a.out
+OBJS	= test.o environment.o output_port.o input_port.o utils.o
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CXX) -o $@ $^
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -o $@ -c $^
 
 clean:
-	rm -f a.out *.o *~
-	rm -rf a.out.dSYM
+	rm -f $(TARGET) *.o *~
