@@ -350,7 +350,11 @@ boost::any p(const std::string& msg, boost::any x)
     std::cout << msg << ": " << stringify(x) << std::endl << std::flush;
 }
 
-/*
+bool isEOF(boost::any x)
+{
+    return (x.type() == typeid(end_of_file)) ? true : false;
+}
+
 bool isSymbol(boost::any x, const char* s)
 {
     try
@@ -363,4 +367,16 @@ bool isSymbol(boost::any x, const char* s)
         return false;
     }
 }
-*/
+
+bool isMisc(boost::any x, const char* s)
+{
+    try
+    {
+        Misc m = boost::any_cast<Misc>(x);
+        return !m->str.compare(s) ? true : false;
+    }
+    catch (const boost::bad_any_cast& e)
+    {
+        return false;
+    }
+}

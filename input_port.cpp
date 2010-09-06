@@ -6,11 +6,6 @@
 
 end_of_file input_port::eof;
 
-bool input_port::isEOF(boost::any x)
-{
-    return (x.type() == typeid(end_of_file)) ? true : false;
-}
-
 // Read and return a Scheme character or EOF.
 boost::any input_port::readChar()
 {
@@ -101,19 +96,6 @@ boost::any input_port::read()
     else
     {
         return token;
-    }
-}
-
-bool input_port::isSymbol(boost::any x, const char* s)
-{
-    try
-    {
-        Symbol sym = boost::any_cast<Symbol>(x);
-        return !sym->str.compare(s) ? true : false;
-    }
-    catch (const boost::bad_any_cast& e)
-    {
-        return false;
     }
 }
 

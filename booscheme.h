@@ -34,8 +34,10 @@ public:
     symbol(const std::string& s) : str(s) {}
     ~symbol() { DEBUG(std::cout << "~symbol " << str << std::endl); }
     
-public:
     const std::string str;
+
+private:
+    // static std::map<std::string, boost::any> symtab; // NOT_YET
 };
 
 class input_port
@@ -45,8 +47,6 @@ public:
         : isPushedToken(false), isPushedChar(false),
           pushedToken(), pushedChar(-1), in(is), buff() {}
     ~input_port() {}
-
-    static bool isEOF(boost::any x);
 
     boost::any readChar();
     boost::any peekChar();
@@ -59,7 +59,6 @@ private:
     int pushChar(int ch);
     int popChar();
 
-    bool isSymbol(boost::any x, const char* s);
     boost::any readTail();
     boost::any nextToken();
 
@@ -83,18 +82,29 @@ private:
     std::ostream& out;
 };
 
+class misc
+{
+public:
+    misc(const char* s) : str(s) {}
+    misc(const std::string& s) : str(s) {}
+    ~misc() {}
+    
+    const std::string str;
+};
+
 class environment;
 
-typedef boost::shared_ptr<std::pair<boost::any, boost::any> > Pair;
 typedef boost::shared_ptr<empty>  Empty;
 typedef boost::shared_ptr<int> Number; // FIXME
 typedef boost::shared_ptr<std::string> String;
 typedef boost::shared_ptr<char> Char; // FIXME
 typedef boost::shared_ptr<symbol> Symbol;
+typedef boost::shared_ptr<std::pair<boost::any, boost::any> > Pair;
 typedef boost::shared_ptr<std::vector<boost::any> > Vector;
 typedef boost::shared_ptr<environment> Environment;
 typedef boost::shared_ptr<input_port> InputPort;
 typedef boost::shared_ptr<output_port> OutputPort;
+typedef boost::shared_ptr<misc> Misc;
 
 class environment
 {
@@ -142,6 +152,9 @@ std::string stringify(boost::any x);
 boost::any p(boost::any x);
 boost::any p(const std::string& msg, boost::any x);
 
-// bool isSymbol(boost::any x, const char* s);
+// bool isEmpty(boost::an x);
+bool isEOF(boost::any x);
+bool isSymbol(boost::any x, const char* s);
+bool isMisc(boost::any x, const char* s);
 
 #endif // _BOOSCHEME_H
