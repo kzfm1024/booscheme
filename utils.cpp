@@ -6,14 +6,16 @@
 #include <stdexcept>
 #include "booscheme.h"
 
-void error(const std::string& message)
+Misc error(const std::string& message)
 {
     throw std::runtime_error("*** ERROR: " + message);
+    return Misc(new misc("<error>"));
 }
 
-void warn(const std::string& message)
+Misc warn(const std::string& message)
 {
     std::cerr << message << std::endl;
+    return Misc(new misc("<warn>"));
 }
 
 Empty null()

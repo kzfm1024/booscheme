@@ -123,8 +123,8 @@ private:
     Environment parent;
 };
 
-void error(const std::string& message);
-void warn(const std::string& message);
+Misc error(const std::string& message);
+Misc warn(const std::string& message);
 Empty null();
 bool truth(boost::any x);
 int num(boost::any x);

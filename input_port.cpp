@@ -19,9 +19,9 @@ boost::any input_port::readChar()
     {
         char ch;
         in.get(ch);
-        if      (in.bad()) { error("IO stream corrupted"); }
-        else if (in.eof()) { return eof;                   }
-        else               { return chr(ch);               }
+        if      (in.bad()) { return error("IO stream corrupted"); }
+        else if (in.eof()) { return eof;                          }
+        else               { return chr(ch);                      }
     }
 }
 
@@ -42,7 +42,7 @@ int input_port::peekCh()
     {
         char ch;
         in.get(ch);
-        if (in.bad()) error("IO stream corrupted");
+        if (in.bad()) { error("IO stream corrupted"); return -1; }
         return pushChar(in.eof() ? -1 : ch);
     }
 }
@@ -151,7 +151,7 @@ boost::any input_port::nextToken()
     // Skip whitespace
     while (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r') in.get(ch);
 
-    if (in.bad()) error("IO stream corrupted");
+    if (in.bad()) return error("IO stream corrupted");
     if (in.eof()) return eof;
     
     switch (ch)
