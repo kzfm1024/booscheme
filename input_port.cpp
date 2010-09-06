@@ -18,7 +18,7 @@ boost::any input_port::readChar()
     else
     {
         char ch;
-        in >> ch;
+        in.get(ch);
         if      (in.bad()) { error("IO stream corrupted"); }
         else if (in.eof()) { return eof;                   }
         else               { return chr(ch);               }
@@ -41,7 +41,7 @@ int input_port::peekCh()
     else
     {
         char ch;
-        in >> ch;
+        in.get(ch);
         if (in.bad()) error("IO stream corrupted");
         return pushChar(in.eof() ? -1 : ch);
     }
@@ -145,11 +145,11 @@ boost::any input_port::nextToken()
     }
     else
     {
-        in >> ch;
+        in.get(ch);
     }
     
     // Skip whitespace
-    while (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r') in >> ch;
+    while (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r') in.get(ch);
 
     if (in.bad()) error("IO stream corrupted");
     if (in.eof()) return eof;
@@ -161,25 +161,25 @@ boost::any input_port::nextToken()
     case '\'': return Symbol(new symbol("'"));
     case '`' : return Symbol(new symbol("`"));
     case ',':
-        in >> ch;
+        in.get(ch);
         if (ch == '@') return Symbol(new symbol(",@"));
         else { pushChar(static_cast<int>(ch)); return Symbol(new symbol(",")); }
     case ';': // Comment: skip to end of line and then read next token
-        while (!in.eof() && ch != '\n' && ch != '\r') in >> ch;
+        while (!in.eof() && ch != '\n' && ch != '\r') in.get(ch);
         return nextToken();
     case '"': // String
         buff.clear();
-        in >> ch;
+        in.get(ch);
         while (ch != '"' && !in.eof())
         {
-            if (ch == '\\') in >> ch;
+            if (ch == '\\') in.get(ch);
             buff.append(1, ch);
-            in >> ch;
+            in.get(ch);
         }
         if (in.eof()) warn("EOF inside of a string.");
         return String(new std::string(buff));
     case '#':
-        in >> ch;
+        in.get(ch);
         switch (ch)
         {
         case 't': case 'T': return true;
@@ -189,7 +189,7 @@ boost::any input_port::nextToken()
             // return listToVector(read());
             return read(); // FIXME
         case '\\': // Char
-            in >> ch;
+            in.get(ch);
             if (ch == 's' || ch == 'S' || ch == 'n' || ch == 'N')
             {
                 pushChar(ch);
@@ -232,7 +232,7 @@ boost::any input_port::nextToken()
         do
         {
             buff.append(1, ch);
-            in >> ch;
+            in.get(ch);
         } while (!in.eof() &&
                  ch != ' ' && ch != '\t' && ch != '\n' && ch != '\r' &&
                  ch != '(' && ch != ')' && ch != '\'' && ch != ';' &&
