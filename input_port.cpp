@@ -63,7 +63,7 @@ boost::any input_port::read()
 {
     boost::any token = nextToken();
 
-    if (isSymbol(token, ")"))
+    if (isSymbol(token, "("))
     {
         return readTail();
     }
@@ -117,7 +117,7 @@ boost::any input_port::readTail()
         token = nextToken();
         if (!isSymbol(token, ")")) 
         {
-            warn("Where's the ')'? Got xxx after ."); // FIXME
+            warn("Where's the ')'? Got " + stringify(token) + " after ." );
         }
         return result;
     }
@@ -141,7 +141,7 @@ boost::any input_port::nextToken()
     }
     else if (isPushedChar)
     {
-        ch = static_cast<int>(popChar()); // FIXME
+        ch = static_cast<char>(popChar());
     }
     else
     {
