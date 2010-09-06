@@ -14,9 +14,9 @@
 
 #if defined(_BOOSCHEME_DEBUG_)
 #include <iostream> // debugging purpose
-#define DEBUG(x) x
+#define BOODEBUG(x) x
 #else
-#define DEBUG(x)
+#define BOODEBUG(x)
 #endif
 
 class empty
@@ -32,7 +32,7 @@ class symbol
 public:
     symbol(const char* s) : str(s) {}
     symbol(const std::string& s) : str(s) {}
-    ~symbol() { DEBUG(std::cout << "~symbol " << str << std::endl); }
+    ~symbol() { BOODEBUG(std::cout << "~symbol " << str << std::endl); }
     
     const std::string str;
 
