@@ -14,13 +14,13 @@ Misc error(const std::string& message)
 
 Misc warn(const std::string& message)
 {
-    std::cerr << message << std::endl;
+    std::cerr << "*** WARNING: " << message << std::endl;
     return Misc(new misc("<warn>"));
 }
 
 Empty null()
 {
-    return Empty(new empty);
+    return Empty(new empty); // FIXME
 }
 
 bool truth(boost::any x)
@@ -43,7 +43,8 @@ int num(boost::any x)
     }
     catch (const boost::bad_any_cast& e)
     {
-        // FIXME
+        error("expected a number, got: " + stringify(x));
+        return 0;
     }
 }
 
@@ -55,7 +56,8 @@ char chr(boost::any x)
     }
     catch (const boost::bad_any_cast& e)
     {
-        // FIXME
+        error("expected a char, got: " + stringify(x));
+        return 0;
     }
 }
 
@@ -67,13 +69,26 @@ String str(boost::any x)
     }
     catch (const boost::bad_any_cast& e)
     {
-        // FIXME
+        error("expected a string, got: " + stringify(x));
+        return String(new std::string);
+    }
+}
+
+Vector vec(boost::any x)
+{
+    try
+    {
+        return boost::any_cast<Vector>(x);
+    }
+    catch (const boost::bad_any_cast& e)
+    {
+        error("expected a vector, got: " + stringify(x));
+        return Vector(new std::vector<boost::any>);
     }
 }
 
 //
 // NOT YET
-// vec()
 // inPort()
 // outPort()
 //
@@ -110,7 +125,7 @@ boost::any setFirst(boost::any x, boost::any y)
     }
     catch (const boost::bad_any_cast& e)
     {
-        // error FIXME
+        return error("attempt to set-car of a non-Pair: " + stringify(x));
     }
 }
 
@@ -122,7 +137,7 @@ boost::any setRest(boost::any x, boost::any y)
     }
     catch (const boost::bad_any_cast& e)
     {
-        // error FIXME
+        return error("attempt to set-cdr of a non-Pair: " + stringify(x));
     }
 }
 
@@ -138,7 +153,7 @@ boost::any third(boost::any x)
 
 boost::any list(boost::any a, boost::any b)
 {
-    return cons(a, cons(b, Empty(new empty)));
+    return cons(a, cons(b, null()));
 }
 
 boost::any list(boost::any a)
@@ -275,9 +290,13 @@ static void stringify(boost::any x, bool quoted, std::string& buf)
     {
         buf.append(boost::any_cast<Symbol>(x)->str);
     }
-    else
+    else if (x.type() == typeid(Misc))
     {
-        // error
+        buf.append(boost::any_cast<Misc>(x)->str);
+    }
+    else 
+    {
+        error("attempt to stringify unknown object");
     }
 }
 
