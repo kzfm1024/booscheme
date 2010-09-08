@@ -235,7 +235,7 @@ boost::any vectorToList(boost::any x)
     }
     else
     {
-        // NOT YET: error
+        error("expected a vector, got: " + stringify(x));
         return null();
     }
 }

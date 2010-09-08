@@ -186,8 +186,7 @@ boost::any input_port::nextToken()
         case 'f': case 'F': return false;
         case '(': // Vector
             pushChar('(');
-            // return listToVector(read());
-            return read(); // FIXME
+            return listToVector(read());
         case '\\': // Char
             in.get(ch);
             if (ch == 's' || ch == 'S' || ch == 'n' || ch == 'N')
