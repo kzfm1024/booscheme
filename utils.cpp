@@ -274,7 +274,7 @@ static void stringify(boost::any x, bool quoted, std::ostringstream& buf)
     }
     else if (x.type() == typeid(Vector))
     {
-        buf << vec; // FIXME
+        buf << vec(x); // FIXME
     }
     else if (x.type() == typeid(bool))
     {
