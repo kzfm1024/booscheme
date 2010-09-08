@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include "booscheme.h"
 
@@ -246,22 +247,22 @@ boost::any write(boost::any x, OutputPort port, bool quoted)
     return x;
 }
 
-static void stringifyPair(Pair p, bool quoted, std::string& buf);
+static void stringifyPair(Pair p, bool quoted, std::ostringstream& buf);
 
-static void stringify(boost::any x, bool quoted, std::string& buf)
+static void stringify(boost::any x, bool quoted, std::ostringstream& buf)
 {
     if (x.type() == typeid(Empty))
     {
-        buf.append("()");
+        buf << "()";     
     }
     else if (x.type() == typeid(Number))
     {
-        // NOT YET
+        buf << num(x);
     }
     else if (x.type() == typeid(Char))
     {
-        if (quoted) buf.append("#\\");
-        buf.append(std::string(1, *(boost::any_cast<Char>(x))));
+        if (quoted) buf << "#\\"; // buf.append("#\\");
+        buf << std::string(1, *(boost::any_cast<Char>(x)));
     }
     else if (x.type() == typeid(Pair))
     {
@@ -269,30 +270,30 @@ static void stringify(boost::any x, bool quoted, std::string& buf)
     }
     else if (x.type() == typeid(String))
     {
-        buf.append(*(boost::any_cast<String>(x)));
+        buf << *(boost::any_cast<String>(x));
     }
     else if (x.type() == typeid(Vector))
     {
-        // NOT YET
+        buf << vec; // FIXME
     }
     else if (x.type() == typeid(bool))
     {
         if (boost::any_cast<bool>(x))
         {
-            buf.append("#t");
+            buf << "#t";
         }
         else
         {
-            buf.append("#f");
+            buf << "#f";
         }
     }
     else if (x.type() == typeid(Symbol))
     {
-        buf.append(boost::any_cast<Symbol>(x)->str);
+        buf << boost::any_cast<Symbol>(x)->str;
     }
     else if (x.type() == typeid(Misc))
     {
-        buf.append(boost::any_cast<Misc>(x)->str);
+        buf << boost::any_cast<Misc>(x)->str;
     }
     else 
     {
@@ -300,7 +301,7 @@ static void stringify(boost::any x, bool quoted, std::string& buf)
     }
 }
 
-static void stringifyPair(Pair p, bool quoted, std::string& buf)
+static void stringifyPair(Pair p, bool quoted, std::ostringstream& buf)
 {
     std::string special;
 
@@ -323,37 +324,37 @@ static void stringifyPair(Pair p, bool quoted, std::string& buf)
 
     if (special.size())
     {
-        buf.append(special);
+        buf << special;
         stringify(second(p), quoted, buf);
     }
     else
     {
-        buf.append("(");
+        buf << "(";
         stringify(p->first, quoted, buf);
 
         boost::any tail = p->second;
         while (tail.type() == typeid(Pair))
         {
-            buf.append(" ");
+            buf << " ";
             stringify(boost::any_cast<Pair>(tail)->first, quoted, buf);
             tail = boost::any_cast<Pair>(tail)->second;
         }
         
         if (tail.type() != typeid(Empty))
         {
-            buf.append(" . ");
+            buf << " . ";
             stringify(tail, quoted, buf);
         }
 
-        buf.append(")");
+        buf << ")";
     }
 }
 
 std::string stringify(boost::any x, bool quoted)
 {
-    std::string str;
-    stringify(x, quoted, str);
-    return str;
+    std::ostringstream buf;
+    stringify(x, quoted, buf);
+    return buf.str();
 }
 
 std::string stringify(boost::any x)
