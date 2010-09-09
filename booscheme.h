@@ -97,29 +97,15 @@ typedef boost::shared_ptr<misc> Misc;
 class symbol
 {
 public:
-    symbol(const std::string& s, int k) : str(s), kind(k) {}
+    symbol(const std::string& s) : str(s) {}
     ~symbol() { BOODEBUG(std::cout << "~symbol " << str << std::endl); }
 
     static Symbol make(const std::string& s);
     const std::string& name() { return str; }
 
-#if 0
 private:
-    static Symbol makeOrdinary(const std::string& s);
-    static Symbol makeSyntax(const std::string& s);
-    static Symbol makeInternal(const std::string& s);
-#endif
-
-private:
-    static const int ORDINARY = 0;
-    static const int SYNTAX   = 1;
-    static const int INTERNAL = 2;
-
-    static Symbol make(const std::string& s, int kind);
     static std::map<std::string, Symbol> table;
-
     std::string str;
-    int kind;
 };
 
 class environment
@@ -168,7 +154,6 @@ std::string stringify(boost::any x);
 boost::any p(boost::any x);
 boost::any p(const std::string& msg, boost::any x);
 
-// bool isEmpty(boost::an x);
 bool isEOF(boost::any x);
 bool isSymbol(boost::any x, const char* s);
 bool isMisc(boost::any x, const char* s);
