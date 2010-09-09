@@ -41,14 +41,14 @@ void test2()
 {
     cout << "### test2 ###" << endl;
 
-    boost::any x = Symbol(new symbol("bar"));
-    cout << boost::any_cast<Symbol>(x)->str << endl;
+    boost::any x = symbol::make("bar");
+    cout << boost::any_cast<Symbol>(x)->name() << endl;
 
     cout << "HERE #1" << endl;
 
-    x = Symbol(new symbol("hoge"));
-    cout << boost::any_cast<Symbol>(x)->str << endl;    
-
+    x = symbol::make("hoge");
+    cout << boost::any_cast<Symbol>(x)->name() << endl;
+    
     cout << "HERE #2" << endl;
 }
 
@@ -56,8 +56,8 @@ void test3()
 {
     cout << "### test3 ###" << endl;
 
-    boost::any foo = Symbol(new symbol("foo"));
-    boost::any bar = Symbol(new symbol("bar"));
+    boost::any foo = symbol::make("foo");
+    boost::any bar = symbol::make("bar");
     boost::any nil = Empty(new empty);
     
     cout << stringify(cons(foo, bar)) << endl;

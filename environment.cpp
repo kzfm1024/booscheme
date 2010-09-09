@@ -12,7 +12,7 @@ environment::environment(boost::any vars, boost::any vals, Environment parent)
 
 boost::any environment::lookup(Symbol sym)
 {
-    std::map<std::string, boost::any>::iterator iter = env.find(sym->str);
+    std::map<std::string, boost::any>::iterator iter = env.find(sym->name());
     if (iter != env.end())
     {
         return *iter;
@@ -34,7 +34,7 @@ boost::any environment::define(boost::any var, boost::any val)
     try
     {
         Symbol sym = boost::any_cast<Symbol>(var);
-        env[sym->str] = val;
+        env[sym->name()] = val;
     }
     catch (const boost::bad_any_cast& e)
     {
@@ -47,7 +47,7 @@ boost::any environment::set(boost::any var, boost::any val)
     try
     {
         Symbol sym = boost::any_cast<Symbol>(var);
-        std::map<std::string, boost::any>::iterator iter = env.find(sym->str);
+        std::map<std::string, boost::any>::iterator iter = env.find(sym->name());
         if (iter != env.end())
         {
             (*iter).second = val;

@@ -289,7 +289,7 @@ static void stringify(boost::any x, bool quoted, std::ostringstream& buf)
     }
     else if (x.type() == typeid(Symbol))
     {
-        buf << boost::any_cast<Symbol>(x)->str;
+        buf << boost::any_cast<Symbol>(x)->name();
     }
     else if (x.type() == typeid(Misc))
     {
@@ -308,18 +308,10 @@ static void stringifyPair(Pair p, bool quoted, std::ostringstream& buf)
     if ((p->second.type() == typeid(Pair)) &&
         rest(p->second).type() == typeid(Empty))
     {
-        try
-        {
-            Symbol sym = boost::any_cast<Symbol>(p->first);
-            if      (!sym->str.compare("quote"))            { special = "'";  }
-            else if (!sym->str.compare("quasiquote"))       { special = "`";  }
-            else if (!sym->str.compare("unquote"))          { special = ",";  }
-            else if (!sym->str.compare("unquote-splicing")) { special = ",@"; }
-        }
-        catch (const boost::bad_any_cast& e)
-        {
-            ; // do nothing
-        }   
+        if      (isSymbol(p->first, "quote"))            { special = "'";  }
+        else if (isSymbol(p->first, "quasiquote"))       { special = "`";  }
+        else if (isSymbol(p->first, "unquote"))          { special = ",";  }
+        else if (isSymbol(p->first, "unquote-splicing")) { special = ",@"; }
     }
 
     if (special.size())
@@ -382,7 +374,7 @@ bool isSymbol(boost::any x, const char* s)
     try
     {
         Symbol sym = boost::any_cast<Symbol>(x);
-        return !sym->str.compare(s) ? true : false;
+        return !sym->name().compare(s) ? true : false;
     }
     catch (const boost::bad_any_cast& e)
     {

@@ -79,19 +79,19 @@ boost::any input_port::read()
     }
     else if (isSymbol(token, "'"))
     {
-        return list(Symbol(new symbol("quote")), read());
+        return list(symbol::make("quote"), read());
     }
     else if (isSymbol(token, "`"))
     {
-        return list(Symbol(new symbol("quasiquote")), read());
+        return list(symbol::make("quasiquote"), read());
     }
     else if (isSymbol(token, ","))
     {
-        return list(Symbol(new symbol("unquote")), read());
+        return list(symbol::make("unquote"), read());
     }
     else if (isSymbol(token, ",@"))
     {
-        return list(Symbol(new symbol("unquote-splicing")), read());
+        return list(symbol::make("unquote-splicing"), read());
     }
     else
     {
@@ -156,14 +156,14 @@ boost::any input_port::nextToken()
     
     switch (ch)
     {
-    case '(' : return Symbol(new symbol("("));
-    case ')' : return Symbol(new symbol("("));
-    case '\'': return Symbol(new symbol("'"));
-    case '`' : return Symbol(new symbol("`"));
+    case '(' : return symbol::make("(");
+    case ')' : return symbol::make(")");
+    case '\'': return symbol::make("'");
+    case '`' : return symbol::make("`");
     case ',':
         in.get(ch);
-        if (ch == '@') return Symbol(new symbol(",@"));
-        else { pushChar(static_cast<int>(ch)); return Symbol(new symbol(",")); }
+        if (ch == '@') return symbol::make(",@");
+        else { pushChar(static_cast<int>(ch)); return symbol::make(","); }
     case ';': // Comment: skip to end of line and then read next token
         while (!in.eof() && ch != '\n' && ch != '\r') in.get(ch);
         return nextToken();
@@ -240,6 +240,6 @@ boost::any input_port::nextToken()
         //
         // FIXME 数字への変換を試みる
         // 
-        return Symbol(new symbol(buff));
+        return symbol::make(buff);
     }
 }

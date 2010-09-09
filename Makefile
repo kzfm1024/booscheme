@@ -5,7 +5,7 @@ CXXFLAGS	= \
 	-D_ENABLE_BOODEBUG_
 
 TARGET	= a.out
-OBJS	= test.o environment.o output_port.o input_port.o utils.o
+OBJS	= test.o environment.o symbol.o output_port.o input_port.o utils.o
 
 all: $(TARGET)
 
