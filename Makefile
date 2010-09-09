@@ -2,7 +2,7 @@ CXX			= g++
 CXXFLAGS	= \
 	-I/usr/local/boost_1_44_0 \
 	-g \
-	-D_BOOSCHEME_DEBUG_
+	-D_ENABLE_BOODEBUG_
 
 TARGET	= a.out
 OBJS	= test.o environment.o output_port.o input_port.o utils.o

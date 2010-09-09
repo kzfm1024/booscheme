@@ -12,7 +12,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/any.hpp>
 
-#if defined(_BOOSCHEME_DEBUG_)
+#if defined(_ENABLE_BOODEBUG_)
 #include <iostream> // debugging purpose
 #define BOODEBUG(x) x
 #else
