@@ -64,6 +64,8 @@ public:
     ~output_port() {}
     
     void write(const std::string& s);
+    void newline();
+    void flush();
 
 private:
     std::ostream& out;
