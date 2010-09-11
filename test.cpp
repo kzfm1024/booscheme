@@ -64,11 +64,9 @@ void test3()
     cout << stringify(cons(foo, cons(bar, nil))) << endl;
 }
 
-int main()
+void test4()
 {
-    test1();
-    test2();
-    test3();
+    cout << "### test4 ###" << endl;
 
     bool b;
     boost::any a = b;
@@ -77,4 +75,35 @@ int main()
     {
         cout << "a is bool." << endl;
     }
+}
+
+void read_print_loop()
+{
+    InputPort input = InputPort(new input_port(cin));
+    OutputPort output = OutputPort(new output_port(cout));
+    boost::any x;
+    
+    while (1)
+    {
+        try
+        {
+            output->write("boo> "); output->flush();
+            if (isEOF(x = input->read())) return;
+            write(x, output, true);
+            output->newline();
+        }
+        catch (const exception& e)
+        {
+            cout << e.what() << endl;
+        }
+    }
+}
+
+int main()
+{
+    test1();
+    test2();
+    test3();
+    test4();
+    read_print_loop();
 }
