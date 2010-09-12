@@ -5,10 +5,6 @@
 #include <cctype>
 #include "booscheme.h"
 
-#include <stdio.h>
-#include <limits.h>
-#include <errno.h>
-
 end_of_file input_port::eof;
 
 // Read and return a Scheme character or EOF.
@@ -247,30 +243,21 @@ boost::any input_port::nextToken()
             buff.append(1, ch);
             in.get(ch);
         } while (!in.eof() && !isspace(ch) &&
-                 // ch != ' ' && ch != '\t' && ch != '\n' && ch != '\r' &&
                  ch != '(' && ch != ')' && ch != '\'' && ch != ';' &&
                  ch != '"' && ch != ',' && ch != '`');
         pushChar(ch);
 
 #if 0
-        //
-        // FIXME 数字への変換を試みる
-        // 
+        // Try potential numbers, but catch any format errors.
+        if (c == '.' || c == '+' || c == '-' || (c >= '0' && c <= '9'))
         {
-            long int val;
-            char* endptr;
-            int base = 10;
-            
-            val = strtol(buff.c_str(), &endptr, base);
-
-            if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN)))
+            try
             {
-                // out of range
+                return toNumber(buff); // FIXME
             }
-            
-            if (*endptr)
+            catch (const std::invalid_argument& e)
             {
-                // not a number
+                ; // do nothing
             }
         }
 #endif

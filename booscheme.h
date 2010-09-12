@@ -9,6 +9,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <stdexcept>
 #include <boost/shared_ptr.hpp>
 #include <boost/any.hpp>
 
@@ -131,7 +132,7 @@ Misc error(const std::string& message);
 Misc warn(const std::string& message);
 Empty null();
 bool truth(boost::any x);
-int num(boost::any x);
+long int num(boost::any x);
 char chr(boost::any x);
 String str(boost::any x);
 
@@ -159,5 +160,7 @@ boost::any p(const std::string& msg, boost::any x);
 bool isEOF(boost::any x);
 bool isSymbol(boost::any x, const char* s);
 bool isMisc(boost::any x, const char* s);
+
+Number toNumber(const std::string& s); // FIXME
 
 #endif // _BOOSCHEME_H

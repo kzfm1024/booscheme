@@ -2,9 +2,12 @@
 // utils.cpp
 //
 
+#include <stdio.h> // for strtol()
+#include <limits.h>
+#include <errno.h>
+
 #include <iostream>
 #include <sstream>
-#include <stdexcept>
 #include "booscheme.h"
 
 Misc error(const std::string& message)
@@ -36,7 +39,7 @@ bool truth(boost::any x)
     }
 }
 
-int num(boost::any x)
+long int num(boost::any x)
 {
     try
     {
@@ -393,4 +396,25 @@ bool isMisc(boost::any x, const char* s)
     {
         return false;
     }
+}
+
+Number toNumber(const std::string& s)
+{
+    long int val;
+    char* endptr;
+    int base = 10;
+            
+    val = strtol(s.c_str(), &endptr, base);
+
+    if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN)))
+    {
+        throw std::invalid_argument("out of ranage");
+    }
+            
+    if (*endptr)
+    {
+        throw std::invalid_argument("not a number");
+    }
+
+    return Number(new long int(val));
 }
