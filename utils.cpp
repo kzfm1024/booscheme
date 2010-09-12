@@ -39,6 +39,7 @@ bool truth(boost::any x)
     }
 }
 
+#if 0
 long int num(boost::any x)
 {
     try
@@ -51,6 +52,7 @@ long int num(boost::any x)
         return 0;
     }
 }
+#endif
 
 char chr(boost::any x)
 {
@@ -260,7 +262,7 @@ static void stringify(boost::any x, bool quoted, std::ostringstream& buf)
     }
     else if (x.type() == typeid(Number))
     {
-        buf << num(x);
+        buf << *(boost::any_cast<Number>(x));
     }
     else if (x.type() == typeid(Char))
     {

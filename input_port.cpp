@@ -247,7 +247,6 @@ boost::any input_port::nextToken()
                  ch != '"' && ch != ',' && ch != '`');
         pushChar(ch);
 
-#if 0
         // Try potential numbers, but catch any format errors.
         if (c == '.' || c == '+' || c == '-' || (c >= '0' && c <= '9'))
         {
@@ -260,7 +259,6 @@ boost::any input_port::nextToken()
                 ; // do nothing
             }
         }
-#endif
 
         return symbol::make(buff);
     }
