@@ -125,7 +125,16 @@ boost::any input_port::readTail()
     {
         isPushedToken = true;
         pushedToken = token;
-        return cons(read(), readTail());
+
+        //
+        // return cons(read(), readTail());
+        //
+        // 引数の評価順は仕様では不定である。
+        // Intel x86 でよく使われる cdecl 規約では後の引数からスタックに
+        // 積まれるため readTail() が無限ループしてしまう。
+        // 
+        boost::any x = read();
+        return cons(x, readTail());
     }
 }
 
