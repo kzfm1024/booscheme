@@ -2,6 +2,7 @@
 // input_port.cpp
 //
 
+#include <cctype>
 #include "booscheme.h"
 
 end_of_file input_port::eof;
@@ -158,7 +159,7 @@ boost::any input_port::nextToken()
     }
     
     // Skip whitespace
-    while (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r') in.get(ch);
+    while (isspace(ch)) in.get(ch);
 
     if (in.bad()) return error("IO stream corrupted");
     if (in.eof()) return eof;
@@ -241,11 +242,12 @@ boost::any input_port::nextToken()
         {
             buff.append(1, ch);
             in.get(ch);
-        } while (!in.eof() &&
-                 ch != ' ' && ch != '\t' && ch != '\n' && ch != '\r' &&
+        } while (!in.eof() && !isspace(ch) &&
+                 // ch != ' ' && ch != '\t' && ch != '\n' && ch != '\r' &&
                  ch != '(' && ch != ')' && ch != '\'' && ch != ';' &&
                  ch != '"' && ch != ',' && ch != '`');
         pushChar(ch);
+
         //
         // FIXME 数字への変換を試みる
         // 
