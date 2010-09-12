@@ -85,7 +85,7 @@ class symbol;
 class environment;
 
 typedef boost::shared_ptr<empty>  Empty;
-typedef boost::shared_ptr<int> Number; // FIXME
+typedef boost::shared_ptr<long int> Number; // FIXME
 typedef boost::shared_ptr<std::string> String;
 typedef boost::shared_ptr<char> Char; // FIXME
 typedef boost::shared_ptr<symbol> Symbol;

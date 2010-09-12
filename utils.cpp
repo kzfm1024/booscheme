@@ -40,7 +40,7 @@ int num(boost::any x)
 {
     try
     {
-        return boost::any_cast<int>(x);
+        return boost::any_cast<long int>(x);
     }
     catch (const boost::bad_any_cast& e)
     {
