@@ -84,6 +84,9 @@ public:
 
 class symbol;
 class environment;
+class procedure;
+class closure;
+class primitive;
 
 typedef boost::shared_ptr<empty>  Empty;
 typedef boost::shared_ptr<long int> Number; // FIXME
@@ -93,6 +96,9 @@ typedef boost::shared_ptr<symbol> Symbol;
 typedef boost::shared_ptr<std::pair<boost::any, boost::any> > Pair;
 typedef boost::shared_ptr<std::vector<boost::any> > Vector;
 typedef boost::shared_ptr<environment> Environment;
+typedef boost::shared_ptr<procedure> Procedure;
+typedef boost::shared_ptr<closure> Closure;
+typedef boost::shared_ptr<primitive> Primitive;
 typedef boost::shared_ptr<input_port> InputPort;
 typedef boost::shared_ptr<output_port> OutputPort;
 typedef boost::shared_ptr<misc> Misc;
@@ -126,6 +132,50 @@ public:
 private:
     std::map<std::string, boost::any> env;
     Environment parent;
+};
+
+class procedure
+{
+public:
+    procedure() : name("anonymous procedure") {}
+    virtual ~procedure() {}
+
+protected:
+    std::string name;
+};
+
+class closure : public procedure
+{
+public:
+    closure(boost::any p, boost::any b, Environment e);
+    virtual ~closure() {}
+
+private:
+    boost::any params;
+    boost::any body;
+    Environment env;
+};
+
+class primitive : public procedure
+{
+};
+
+class interpreter
+{
+public:
+    interpreter();
+    ~interpreter() {}
+
+    void repl(); // read-eval-print loop
+    boost::any load(const std::string& path);
+    boost::any load(InputPort in);
+    boost::any eval(boost::any x, Environment env);
+    boost::any eval(boost::any x);
+
+private:
+    InputPort input;
+    OutputPort output;
+    Environment globalEnvironment;
 };
 
 Misc error(const std::string& message);

@@ -77,33 +77,13 @@ void test4()
     }
 }
 
-void read_print_loop()
-{
-    InputPort input = InputPort(new input_port(cin));
-    OutputPort output = OutputPort(new output_port(cout));
-    boost::any x;
-    
-    while (1)
-    {
-        try
-        {
-            output->write("boo> "); output->flush();
-            if (isEOF(x = input->read())) return;
-            write(x, output, true);
-            output->newline();
-        }
-        catch (const exception& e)
-        {
-            cout << e.what() << endl;
-        }
-    }
-}
-
 int main()
 {
     test1();
     test2();
     test3();
     test4();
-    read_print_loop();
+    
+    interpreter interp;
+    interp.repl();
 }
