@@ -177,8 +177,11 @@ public:
     boost::any load(InputPort in);
     boost::any eval(boost::any x, Environment env);
     boost::any eval(boost::any x);
-
+    
 private:
+    Pair evalList(boost::any list, Environment env);
+    boost::any reduceCond(boost::any clauses, Environment env);
+
     InputPort input;
     OutputPort output;
     Environment globalEnvironment;
