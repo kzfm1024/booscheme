@@ -80,6 +80,19 @@ String str(boost::any x)
     }
 }
 
+Symbol sym(boost::any x)
+{
+    try
+    {
+        return boost::any_cast<Symbol>(x);
+    }
+    catch (const boost::bad_any_cast& e)
+    {
+        error("expected a symbol, got: " + stringify(x));
+        return Symbol(new symbol(""));
+    }
+}
+
 Vector vec(boost::any x)
 {
     try
@@ -369,9 +382,19 @@ boost::any p(const std::string& msg, boost::any x)
     std::cout << msg << ": " << stringify(x) << std::endl << std::flush;
 }
 
+bool isEmpty(boost::any x)
+{
+    return (x.type() == typeid(Empty)) ? true : false;
+}
+
 bool isEOF(boost::any x)
 {
     return (x.type() == typeid(end_of_file)) ? true : false;
+}
+
+bool isSymbol(boost::any x)
+{
+    return (x.type() == typeid(Symbol)) ? true : false;
 }
 
 bool isSymbol(boost::any x, const char* s)
@@ -385,6 +408,21 @@ bool isSymbol(boost::any x, const char* s)
     {
         return false;
     }
+}
+
+bool isPair(boost::any x)
+{
+    return (x.type() == typeid(Pair)) ? true : false;
+}
+
+bool isClosure(boost::any x)
+{
+    return (x.type() == typeid(Closure)) ? true : false;
+}
+
+bool isMacro(boost::any x)
+{
+    return (x.type() == typeid(Macro)) ? true : false;
 }
 
 bool isMisc(boost::any x, const char* s)

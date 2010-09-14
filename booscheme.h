@@ -86,6 +86,7 @@ class symbol;
 class environment;
 class procedure;
 class closure;
+class macro;
 class primitive;
 
 typedef boost::shared_ptr<empty>  Empty;
@@ -98,6 +99,7 @@ typedef boost::shared_ptr<std::vector<boost::any> > Vector;
 typedef boost::shared_ptr<environment> Environment;
 typedef boost::shared_ptr<procedure> Procedure;
 typedef boost::shared_ptr<closure> Closure;
+typedef boost::shared_ptr<macro> Macro;
 typedef boost::shared_ptr<primitive> Primitive;
 typedef boost::shared_ptr<input_port> InputPort;
 typedef boost::shared_ptr<output_port> OutputPort;
@@ -156,6 +158,10 @@ private:
     Environment env;
 };
 
+class macro : public closure
+{
+};
+
 class primitive : public procedure
 {
 };
@@ -185,6 +191,8 @@ bool truth(boost::any x);
 long int num(boost::any x);
 char chr(boost::any x);
 String str(boost::any x);
+Symbol sym(boost::any x);
+Vector vec(boost::any x);
 
 boost::any first(boost::any x);
 boost::any rest(boost::any x);
@@ -207,8 +215,13 @@ std::string stringify(boost::any x);
 boost::any p(boost::any x);
 boost::any p(const std::string& msg, boost::any x);
 
+bool isEmpty(boost::any x);
 bool isEOF(boost::any x);
+bool isSymbol(boost::any x);
 bool isSymbol(boost::any x, const char* s);
+bool isPair(boost::any x);
+bool isClosure(boost::any x);
+bool isMacro(boost::any x);
 bool isMisc(boost::any x, const char* s);
 
 Number toNumber(const std::string& s); // FIXME
