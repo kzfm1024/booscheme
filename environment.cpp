@@ -5,32 +5,41 @@
 #include "booscheme.h"
 
 environment::environment(boost::any vars, boost::any vals, Environment parent)
-    : env(), parent(parent)
+    : vars(vars), vals(vals), parent(parent)
 {
-    // NOT YET
 }
 
 boost::any environment::lookup(Symbol sym)
 {
-    std::map<std::string, boost::any>::iterator iter = env.find(sym->name());
-    if (iter != env.end())
+    boost::any varList = vars;
+    boost::any valList = vals;
+
+/*
+    while (!isEmpty(varList))
     {
-        return *iter;
+        if (first(varList) == sym)
+        {
+            return first(valList);
+        }
+        else if (varList == sym)
+        {
+            return valList;
+        }
+        else
+        {
+            varList = rest(varList);
+            valList = rest(valList);
+        }
     }
-    else if (parent.get())
-    {
-        return parent->lookup(sym);
-    }
-    else
-    {
-        // FIXME
-        // "Unbound variable: " + sym->str
-        return null();
-    }
+*/
+
+    if (parent) return parent->lookup(sym);
+    else return error("Unbound variable: " + sym->name());
 }
 
 boost::any environment::define(boost::any var, boost::any val)
 {
+#if 0
     try
     {
         Symbol sym = boost::any_cast<Symbol>(var);
@@ -40,10 +49,12 @@ boost::any environment::define(boost::any var, boost::any val)
     {
         // FIXME
     }
+#endif
 }
 
 boost::any environment::set(boost::any var, boost::any val)
 {
+#if 0
     try
     {
         Symbol sym = boost::any_cast<Symbol>(var);
@@ -61,6 +72,7 @@ boost::any environment::set(boost::any var, boost::any val)
     {
         // FIXME FIXME error
     }
+#endif
 }
 
 bool environment::numberArgsOK(boost::any vars, boost::any vals)

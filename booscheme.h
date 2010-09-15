@@ -122,7 +122,7 @@ private:
 class environment
 {
 public:
-    environment() : env(), parent() {}
+    environment() : vars(), vals(), parent() {}
     environment(boost::any vars, boost::any vals, Environment parent);
     ~environment() {}
 
@@ -132,7 +132,9 @@ public:
     bool numberArgsOK(boost::any vars, boost::any vals);
 
 private:
-    std::map<std::string, boost::any> env;
+    // std::map<std::string, boost::any> env;
+    boost::any vars;
+    boost::any vals;
     Environment parent;
 };
 
