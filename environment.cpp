@@ -4,6 +4,11 @@
 
 #include "booscheme.h"
 
+environment::environment()
+    : vars(empty()), vals(empty()), parent()
+{
+}
+
 environment::environment(boost::any vars, boost::any vals, Environment parent)
     : vars(vars), vals(vals), parent(parent)
 {

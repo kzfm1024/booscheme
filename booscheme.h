@@ -126,7 +126,7 @@ private:
 class environment
 {
 public:
-    environment() : vars(), vals(), parent() {}
+    environment();
     environment(boost::any vars, boost::any vals, Environment parent);
     ~environment() {}
 
