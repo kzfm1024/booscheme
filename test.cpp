@@ -2,8 +2,6 @@
 // test.cpp
 //
 
-#include <iostream>
-// #include <stdexcept>
 #include "booscheme.h"
 using namespace std;
 
@@ -15,6 +13,8 @@ void test1()
 
     cout << *(boost::any_cast<String>(pp->first)) << endl;
     cout << boost::any_cast<int>(pp->second) << endl;
+
+
 
     if (pp->first.type() == typeid(String))
     {
@@ -58,10 +58,10 @@ void test3()
 
     boost::any foo = symbol::make("foo");
     boost::any bar = symbol::make("bar");
-    boost::any nil = Empty(new empty);
+    // boost::any nil = Empty(new empty);
     
     cout << stringify(cons(foo, bar)) << endl;
-    cout << stringify(cons(foo, cons(bar, nil))) << endl;
+    cout << stringify(cons(foo, cons(bar, empty()))) << endl;
 }
 
 void test4()

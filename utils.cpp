@@ -10,26 +10,27 @@
 #include <sstream>
 #include "booscheme.h"
 
-Misc error(const std::string& message)
+boost::any error(const std::string& message)
 {
     throw std::runtime_error("*** ERROR: " + message);
-    return Misc(new misc("<error>"));
+    return Misc(new misc("#<error>"));
 }
 
-Misc warn(const std::string& message)
+boost::any warn(const std::string& message)
 {
     std::cerr << "*** WARNING: " << message << std::endl;
-    return Misc(new misc("<warn>"));
+    return Misc(new misc("#<warn>"));
 }
 
-Empty null()
+boost::any empty()
 {
-    return Empty(new empty); // FIXME
+    static Object null;
+    return null;
 }
 
 bool truth(boost::any x)
 {
-    if (x.type() == typeid(bool) && boost::any_cast<bool>(x) == false)
+    if (x.type() == typeid(Boolean) && *(boost::any_cast<Boolean>(x)) == false)
     {
         return false;
     }
@@ -120,7 +121,7 @@ boost::any first(boost::any x)
     }
     catch (const boost::bad_any_cast& e)
     {
-        return null();
+        return empty();
     }
 }    
 
@@ -132,7 +133,7 @@ boost::any rest(boost::any x)
     }
     catch (const boost::bad_any_cast& e)
     {
-        return null();
+        return empty();
     }
 }
 
@@ -172,17 +173,17 @@ boost::any third(boost::any x)
 
 boost::any list(boost::any a, boost::any b)
 {
-    return cons(a, cons(b, null()));
+    return cons(a, cons(b, empty()));
 }
 
 boost::any list(boost::any a)
 {
-    return cons(a, null());
+    return cons(a, empty());
 }
 
 boost::any listStar(boost::any args)
 {
-    if (rest(args).type() == typeid(Empty)) return first(args);
+    if (isEmpty(rest(args))) return first(args);
     else return cons(first(args), listStar(rest(args)));
 }
 
@@ -193,8 +194,8 @@ Pair cons(boost::any a, boost::any b)
 
 boost::any reverse(boost::any x)
 {
-    boost::any result = null();
-    while (x.type() == typeid(Pair))
+    boost::any result = empty();
+    while (isPair(x))
     {
         result = cons(first(x), result);
         x = rest(x);
@@ -202,13 +203,20 @@ boost::any reverse(boost::any x)
     return result;
 }
 
+/*
+bool eq(boost::any x, boost::any y)
+{
+    
+}
+*/
+
 // equal()
 // eqv()
 
 int length(boost::any x)
 {
     int len = 0;
-    while (x.type() == typeid(Pair))
+    while (isPair(x))
     {
         len++;
         x = rest(x);
@@ -219,7 +227,7 @@ int length(boost::any x)
 boost::any listToString(boost::any chars)
 {
     String str = String(new std::string());
-    for (int i = 0; chars.type() == typeid(Pair); i++)
+    for (int i = 0; isPair(chars); i++)
     {
         str->append(1, chr(first(chars)));
         chars = rest(chars);
@@ -231,7 +239,7 @@ boost::any listToString(boost::any chars)
 boost::any listToVector(boost::any objs)
 {
     Vector vec = Vector(new std::vector<boost::any>(length(objs)));
-    for (int i = 0; objs.type() == typeid(Pair); i++)
+    for (int i = 0; isPair(objs); i++)
     {
         vec->at(i) = first(objs);
         objs = rest(objs);
@@ -245,7 +253,7 @@ boost::any vectorToList(boost::any x)
     if (x.type() == typeid(Vector))
     {
         Vector vec = boost::any_cast<Vector>(x);
-        boost::any result = null();
+        boost::any result = empty();
         for (int i = vec->size() - 1; i >= 0; i--)
         {
             result = cons(vec->at(i), result);
@@ -255,7 +263,7 @@ boost::any vectorToList(boost::any x)
     else
     {
         error("expected a vector, got: " + stringify(x));
-        return null();
+        return empty();
     }
 }
 
@@ -269,7 +277,7 @@ static void stringifyPair(Pair p, bool quoted, std::ostringstream& buf);
 
 static void stringify(boost::any x, bool quoted, std::ostringstream& buf)
 {
-    if (x.type() == typeid(Empty))
+    if (isEmpty(x))
     {
         buf << "()";     
     }
@@ -323,8 +331,7 @@ static void stringifyPair(Pair p, bool quoted, std::ostringstream& buf)
 {
     std::string special;
 
-    if ((p->second.type() == typeid(Pair)) &&
-        rest(p->second).type() == typeid(Empty))
+    if (isPair(p->second) && isEmpty(rest(p->second)))
     {
         if      (isSymbol(p->first, "quote"))            { special = "'";  }
         else if (isSymbol(p->first, "quasiquote"))       { special = "`";  }
@@ -350,7 +357,7 @@ static void stringifyPair(Pair p, bool quoted, std::ostringstream& buf)
             tail = boost::any_cast<Pair>(tail)->second;
         }
         
-        if (tail.type() != typeid(Empty))
+        if (!isEmpty(tail))
         {
             buf << " . ";
             stringify(tail, quoted, buf);
@@ -384,7 +391,15 @@ boost::any p(const std::string& msg, boost::any x)
 
 bool isEmpty(boost::any x)
 {
-    return (x.type() == typeid(Empty)) ? true : false;
+    try
+    {
+        Object obj = boost::any_cast<Object>(x);
+        return obj ? false : true;
+    }
+    catch (const boost::bad_any_cast& e)
+    {
+        return false;
+    }
 }
 
 bool isEOF(boost::any x)

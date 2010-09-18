@@ -9,19 +9,18 @@ environment::environment(boost::any vars, boost::any vals, Environment parent)
 {
 }
 
-boost::any environment::lookup(Symbol sym)
+boost::any environment::lookup(Symbol s)
 {
     boost::any varList = vars;
     boost::any valList = vals;
 
-/*
     while (!isEmpty(varList))
     {
-        if (first(varList) == sym)
+        if (sym(first(varList)) == s)
         {
             return first(valList);
         }
-        else if (varList == sym)
+        else if (sym(varList) == s)
         {
             return valList;
         }
@@ -31,54 +30,60 @@ boost::any environment::lookup(Symbol sym)
             valList = rest(valList);
         }
     }
-*/
 
-    if (parent) return parent->lookup(sym);
-    else return error("Unbound variable: " + sym->name());
+    if (parent) return parent->lookup(s);
+    else return error("unbound variable: " + s->name());
 }
 
 boost::any environment::define(boost::any var, boost::any val)
 {
-#if 0
-    try
-    {
-        Symbol sym = boost::any_cast<Symbol>(var);
-        env[sym->name()] = val;
-    }
-    catch (const boost::bad_any_cast& e)
-    {
-        // FIXME
-    }
+    vars = cons(var, vars);
+    vals = cons(val, vals);
+
+#if 0 // FIXME
+	 if (val instanceof Procedure 
+	     && ((Procedure)val).name.equals("anonymous procedure"))
+	     ((Procedure)val).name = var.toString();
 #endif
+
+     return var;
 }
 
 boost::any environment::set(boost::any var, boost::any val)
 {
-#if 0
-    try
+    if (!isSymbol(var))
     {
-        Symbol sym = boost::any_cast<Symbol>(var);
-        std::map<std::string, boost::any>::iterator iter = env.find(sym->name());
-        if (iter != env.end())
+        return error("attempt to set a non-symbol: " + stringify(var));
+    }
+
+    Symbol s = sym(var);
+    boost::any varList = vars;
+    boost::any valList = vals;
+
+    while (!isEmpty(varList))
+    {
+        if (sym(first(varList)) == s)
         {
-            (*iter).second = val;
+            return setFirst(valList, val);
+        }
+        else if (sym(rest(varList)) == s)
+        {
+            return setRest(valList, val);
         }
         else
         {
-            // FIXME error
+            varList = rest(varList);
+            valList = rest(valList);
         }
     }
-    catch (const boost::bad_any_cast& e)
-    {
-        // FIXME FIXME error
-    }
-#endif
+
+    if (parent) return parent->set(s, val);
+    else return error("unbound variable: " + s->name());
 }
 
 bool environment::numberArgsOK(boost::any vars, boost::any vals)
 {
-    return ((vars.type() == typeid(Empty) && vals.type() == typeid(Empty)) ||
-            (vars.type() == typeid(String)) ||
-            (vars.type() == typeid(Pair) && vals.type() == typeid(Pair) &&
-             numberArgsOK(rest(vars), rest(vals))));
+    return ((isEmpty(vars) && isEmpty(vals)) ||
+            (vars.type() == typeid(String)) || // FIXME isString()
+            (isPair(vars) && isPair(vals) && numberArgsOK(rest(vars), rest(vals))));
 }

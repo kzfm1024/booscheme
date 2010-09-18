@@ -14,15 +14,39 @@
 #include <boost/any.hpp>
 
 #if defined(_ENABLE_BOODEBUG_)
-#include <iostream> // debugging purpose
 #define BOODEBUG(x) x
 #else
 #define BOODEBUG(x)
 #endif
 
-class empty
-{
-};
+class symbol;
+class input_port;
+class output_port;
+class procedure;
+class closure;
+class macro;
+class primitive;
+class environment;
+class end_of_file;
+class misc;
+
+typedef boost::shared_ptr<boost::any>                         Object;
+typedef boost::shared_ptr<bool>                               Boolean;
+typedef boost::shared_ptr<std::pair<boost::any, boost::any> > Pair;
+typedef boost::shared_ptr<symbol>                             Symbol;
+typedef boost::shared_ptr<long int>                           Number; // FIXME
+typedef boost::shared_ptr<char>                               Char; // FIXME
+typedef boost::shared_ptr<std::string>                        String;
+typedef boost::shared_ptr<std::vector<boost::any> >           Vector;
+typedef boost::shared_ptr<input_port>                         InputPort;
+typedef boost::shared_ptr<output_port>                        OutputPort;
+typedef boost::shared_ptr<procedure>                          Procedure;
+typedef boost::shared_ptr<closure>                            Closure;
+typedef boost::shared_ptr<macro>                              Macro;
+typedef boost::shared_ptr<primitive>                          Primitive;
+typedef boost::shared_ptr<environment>                        Environment;
+typedef boost::shared_ptr<end_of_file>                        EndOfFile;
+typedef boost::shared_ptr<misc>                               Misc;
 
 class end_of_file
 {
@@ -82,34 +106,12 @@ public:
     const std::string str;
 };
 
-class symbol;
-class environment;
-class procedure;
-class closure;
-class macro;
-class primitive;
-
-typedef boost::shared_ptr<empty>  Empty;
-typedef boost::shared_ptr<long int> Number; // FIXME
-typedef boost::shared_ptr<std::string> String;
-typedef boost::shared_ptr<char> Char; // FIXME
-typedef boost::shared_ptr<symbol> Symbol;
-typedef boost::shared_ptr<std::pair<boost::any, boost::any> > Pair;
-typedef boost::shared_ptr<std::vector<boost::any> > Vector;
-typedef boost::shared_ptr<environment> Environment;
-typedef boost::shared_ptr<procedure> Procedure;
-typedef boost::shared_ptr<closure> Closure;
-typedef boost::shared_ptr<macro> Macro;
-typedef boost::shared_ptr<primitive> Primitive;
-typedef boost::shared_ptr<input_port> InputPort;
-typedef boost::shared_ptr<output_port> OutputPort;
-typedef boost::shared_ptr<misc> Misc;
 
 class symbol
 {
 public:
     symbol(const std::string& s) : str(s) {}
-    ~symbol() { BOODEBUG(std::cout << "~symbol " << str << std::endl); }
+    ~symbol() {} 
 
     static Symbol make(const std::string& s);
     const std::string& name() { return str; }
@@ -132,7 +134,6 @@ public:
     bool numberArgsOK(boost::any vars, boost::any vals);
 
 private:
-    // std::map<std::string, boost::any> env;
     boost::any vars;
     boost::any vals;
     Environment parent;
@@ -154,8 +155,8 @@ public:
     closure(boost::any p, boost::any b, Environment e);
     virtual ~closure() {}
 
-private:
-    boost::any params;
+public:
+    boost::any parms;
     boost::any body;
     Environment env;
 };
@@ -181,7 +182,7 @@ public:
     boost::any eval(boost::any x);
     
 private:
-    Pair evalList(boost::any list, Environment env);
+    boost::any evalList(boost::any list, Environment env);
     boost::any reduceCond(boost::any clauses, Environment env);
 
     InputPort input;
@@ -189,9 +190,10 @@ private:
     Environment globalEnvironment;
 };
 
-Misc error(const std::string& message);
-Misc warn(const std::string& message);
-Empty null();
+boost::any error(const std::string& message);
+boost::any warn(const std::string& message);
+// boost::any null();
+boost::any empty();
 bool truth(boost::any x);
 long int num(boost::any x);
 char chr(boost::any x);

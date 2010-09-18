@@ -5,9 +5,9 @@
 #include "booscheme.h"
 
 closure::closure(boost::any p, boost::any b, Environment e)
-    : params(p), env(e)
+    : parms(p), env(e)
 {
-    if (b.type() == typeid(Pair) && rest(b).type() == typeid(Empty))
+    if (isPair(b) && isEmpty(rest(b)))
     {
         body = first(b);
     }

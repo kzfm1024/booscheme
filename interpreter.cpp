@@ -26,7 +26,7 @@ void interpreter::repl()
         }
         catch (const std::exception& e)
         {
-            std::cout << e.what() << std::endl; // FIXME
+            std::cout << e.what() << std::endl;
         }
     }
 }
@@ -40,11 +40,11 @@ boost::any interpreter::eval(boost::any x, Environment env)
     //
     while (true)
     {
-        if (isSymbol(x))
+        if (isSymbol(x))        // VARIABLE
         {
             return env->lookup(sym(x));
         }
-        else if (!isPair(x))
+        else if (!isPair(x))    // CONSTANT
         {
             return x;
         }
@@ -66,42 +66,53 @@ boost::any interpreter::eval(boost::any x, Environment env)
             }
             else if (isSymbol(fn, "define")) // DEFINE
             {
-                // NOT YET
+                if (isPair(first(args)))
+                {
+                    return env->define(first(first(args)),
+                                       eval(cons(symbol::make("lambda"),
+                                                 cons(rest(first(args)), rest(args))), env));
+                }
+                else
+                {
+                    return env->define(first(args), eval(second(args), env));
+                }
             }
             else if (isSymbol(fn, "set!")) // SET!
             {
-                // NOT YET
+                return env->set(first(args), eval(second(args), env));
             }
             else if (isSymbol(fn, "if")) // IF
             {
-
+                x = (truth(eval(first(args), env))) ? second(args) : third(args);
             }
             else if (isSymbol(fn, "cond")) // COND
             {
-
+                x = reduceCond(args, env);
             }
             else if (isSymbol(fn, "lambda")) // LAMBDA
             {
-
+                return Closure(new closure(first(args), rest(args), env));
             }
             else if (isSymbol(fn, "macro"))
             {
-
+                // return Macro(new macro(first(args), rest(args), env); NOT YET
             }
             else
             {
                 fn = eval(fn, env);
                 if (isMacro(fn))
                 {
-
+                    // FIXME
                 }
                 else if (isClosure(fn))
                 {
-
+                    Closure f = boost::any_cast<Closure>(fn);
+                    x = f->body;
+                    env = Environment(new environment(f->parms, evalList(args, env), f->env));
                 }
                 else
                 {
-                    return x; // NOT YET
+                    return x; // NOT YET: apply
                 }
             }
         }
@@ -113,7 +124,51 @@ boost::any interpreter::eval(boost::any x)
     return eval(x, globalEnvironment);
 }
 
-//
-// evalList()
-// reduceCond()
-//
+boost::any interpreter::evalList(boost::any list, Environment env)
+{
+    if (isEmpty(list))
+    {
+        return empty();
+    }
+    else if (!isPair(list))
+    {
+        return error("illegal arg list: " + stringify(list));
+    }
+    else
+    {
+        boost::any x = eval(first(list), env);
+        return cons(x, evalList(rest(list), env));
+    }
+}
+
+/** Reduce a cond expression to some code which, when evaluated,
+ * gives the value of the cond expression.  We do it that way to
+ * maintain tail recursion. **/
+boost::any interpreter::reduceCond(boost::any clauses, Environment env)
+{
+    boost::any result;
+    
+    while (true)
+    {
+        if (isEmpty(clauses)) return false; // FIXME
+
+        boost::any clause = first(clauses);
+        clauses = first(clauses);
+
+        if (isSymbol(first(clause), "else") || truth(result = eval(first(clause), env)))
+        {
+            if (isEmpty(rest(clause)))
+            {
+                return list(symbol::make("quote"), result);
+            }
+            else if (isSymbol(second(clause), "=>"))
+            {
+                return list(third(clause), list(symbol::make("quote"), result));
+            }
+            else
+            {
+                return cons(symbol::make("begin"), rest(clause));
+            }
+        }
+    }
+}

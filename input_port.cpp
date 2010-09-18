@@ -110,7 +110,7 @@ boost::any input_port::readTail()
     }
     else if (isSymbol(token, ")"))
     {
-        return null();
+        return empty();
     }
     else if (isSymbol(token, "."))
     {
