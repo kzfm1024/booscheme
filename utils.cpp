@@ -379,16 +379,6 @@ std::string stringify(boost::any x)
     return stringify(x, true);
 }
         
-boost::any p(boost::any x)
-{
-    std::cout << stringify(x) << std::endl << std::flush;
-}
-
-boost::any p(const std::string& msg, boost::any x)
-{
-    std::cout << msg << ": " << stringify(x) << std::endl << std::flush;
-}
-
 bool isEmpty(boost::any x)
 {
     try
@@ -473,3 +463,15 @@ Number toNumber(const std::string& s)
 
     return Number(new long int(val));
 }
+
+#if defined(_ENABLE_BOODEBUG_)
+boost::any p(boost::any x)
+{
+    std::cout << stringify(x) << std::endl << std::flush;
+}
+
+boost::any p(const std::string& msg, boost::any x)
+{
+    std::cout << msg << ": " << stringify(x) << std::endl << std::flush;
+}
+#endif

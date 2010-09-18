@@ -15,6 +15,8 @@
 
 #if defined(_ENABLE_BOODEBUG_)
 #define BOODEBUG(x) x
+boost::any p(boost::any x);
+boost::any p(const std::string& msg, boost::any x);
 #else
 #define BOODEBUG(x)
 #endif
@@ -219,8 +221,6 @@ boost::any vectorToList(boost::any x);
 boost::any write(boost::any x, OutputPort port, bool quoted);
 std::string stringify(boost::any x, bool quoted);
 std::string stringify(boost::any x);
-boost::any p(boost::any x);
-boost::any p(const std::string& msg, boost::any x);
 
 bool isEmpty(boost::any x);
 bool isEOF(boost::any x);
