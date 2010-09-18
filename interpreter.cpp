@@ -68,9 +68,9 @@ boost::any interpreter::eval(boost::any x, Environment env)
             {
                 if (isPair(first(args)))
                 {
-                    return env->define(first(first(args)),
-                                       eval(cons(symbol::make("lambda"),
-                                                 cons(rest(first(args)), rest(args))), env));
+                    boost::any lx = cons(symbol::make("lambda"),
+                                         cons(rest(first(args)), rest(args)));
+                    return env->define(first(first(args)), eval(lx, env));
                 }
                 else
                 {
@@ -108,7 +108,9 @@ boost::any interpreter::eval(boost::any x, Environment env)
                 {
                     Closure f = boost::any_cast<Closure>(fn);
                     x = f->body;
-                    env = Environment(new environment(f->parms, evalList(args, env), f->env));
+                    env = Environment(new environment(f->parms,
+                                                      evalList(args, env),
+                                                      f->env));
                 }
                 else
                 {
