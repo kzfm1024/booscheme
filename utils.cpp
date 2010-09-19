@@ -415,6 +415,19 @@ bool isSymbol(boost::any x, const char* s)
     }
 }
 
+bool isProcedure(boost::any x, const std::string& s)
+{
+    try
+    {
+        Procedure proc = boost::any_cast<Procedure>(x);
+        return (proc->name == s) ? true : false;
+    }
+    catch (const boost::bad_any_cast& e)
+    {
+        return false;
+    }
+}
+
 bool isClosure(boost::any x)
 {
     return (x.type() == typeid(Closure)) ? true : false;

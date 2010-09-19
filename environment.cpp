@@ -45,13 +45,12 @@ boost::any environment::define(boost::any var, boost::any val)
     vars = cons(var, vars);
     vals = cons(val, vals);
 
-#if 0 // FIXME
-	 if (val instanceof Procedure 
-	     && ((Procedure)val).name.equals("anonymous procedure"))
-	     ((Procedure)val).name = var.toString();
-#endif
+    if (isProcedure(val, "anonymous procedure"))
+    {
+        proc(val)->name = sym(var)->name();
+    }
 
-     return var;
+    return var;
 }
 
 boost::any environment::set(boost::any var, boost::any val)

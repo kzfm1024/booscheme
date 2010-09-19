@@ -147,7 +147,6 @@ public:
     procedure() : name("anonymous procedure") {}
     virtual ~procedure() {}
 
-protected:
     std::string name;
 };
 
@@ -226,6 +225,7 @@ std::string stringify(boost::any x);
 bool isPair(boost::any x);
 bool isSymbol(boost::any x);
 bool isSymbol(boost::any x, const char* s);
+bool isProcedure(boost::any x, const std::string& s);
 bool isClosure(boost::any x);
 bool isMacro(boost::any x);
 bool isEOF(boost::any x);
