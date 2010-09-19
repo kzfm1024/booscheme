@@ -37,7 +37,7 @@ boost::any environment::lookup(Symbol s)
     }
 
     if (parent) return parent->lookup(s);
-    else return error("unbound variable: " + s->name());
+    else return error("unbound variable: " + s->name);
 }
 
 boost::any environment::define(boost::any var, boost::any val)
@@ -47,7 +47,7 @@ boost::any environment::define(boost::any var, boost::any val)
 
     if (isProcedure(val, "anonymous procedure"))
     {
-        proc(val)->name = sym(var)->name();
+        proc(val)->name = sym(var)->name;
     }
 
     return var;
@@ -82,7 +82,7 @@ boost::any environment::set(boost::any var, boost::any val)
     }
 
     if (parent) return parent->set(s, val);
-    else return error("unbound variable: " + s->name());
+    else return error("unbound variable: " + s->name);
 }
 
 bool environment::numberArgsOK(boost::any vars, boost::any vals)

@@ -328,7 +328,7 @@ static void stringify(boost::any x, bool quoted, std::ostringstream& buf)
     }
     else if (x.type() == typeid(Symbol))
     {
-        buf << boost::any_cast<Symbol>(x)->name();
+        buf << boost::any_cast<Symbol>(x)->name;
     }
     else if (x.type() == typeid(Misc))
     {
@@ -402,12 +402,12 @@ bool isSymbol(boost::any x)
     return (x.type() == typeid(Symbol)) ? true : false;
 }
 
-bool isSymbol(boost::any x, const char* s)
+bool isSymbol(boost::any x, const std::string& s)
 {
     try
     {
         Symbol sym = boost::any_cast<Symbol>(x);
-        return !sym->name().compare(s) ? true : false;
+        return (sym->name == s) ? true : false;
     }
     catch (const boost::bad_any_cast& e)
     {

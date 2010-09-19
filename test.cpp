@@ -42,12 +42,12 @@ void test2()
     cout << "### test2 ###" << endl;
 
     boost::any x = symbol::make("bar");
-    cout << boost::any_cast<Symbol>(x)->name() << endl;
+    cout << boost::any_cast<Symbol>(x)->name << endl;
 
     cout << "HERE #1" << endl;
 
     x = symbol::make("hoge");
-    cout << boost::any_cast<Symbol>(x)->name() << endl;
+    cout << boost::any_cast<Symbol>(x)->name << endl;
     
     cout << "HERE #2" << endl;
 }

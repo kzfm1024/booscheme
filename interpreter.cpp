@@ -157,7 +157,8 @@ boost::any interpreter::reduceCond(boost::any clauses, Environment env)
         boost::any clause = first(clauses);
         clauses = first(clauses);
 
-        if (isSymbol(first(clause), "else") || truth(result = eval(first(clause), env)))
+        if (isSymbol(first(clause), "else") ||
+            truth(result = eval(first(clause), env)))
         {
             if (isEmpty(rest(clause)))
             {

@@ -112,15 +112,14 @@ public:
 class symbol
 {
 public:
-    symbol(const std::string& s) : str(s) {}
+    symbol(const std::string& n) : name(n) {}
     ~symbol() {} 
 
-    static Symbol make(const std::string& s);
-    const std::string& name() { return str; }
+    static Symbol make(const std::string& n); // FIXME: change to get()?
+    std::string name;
 
 private:
     static std::map<std::string, Symbol> table;
-    std::string str;
 };
 
 class environment
@@ -224,7 +223,7 @@ std::string stringify(boost::any x);
 
 bool isPair(boost::any x);
 bool isSymbol(boost::any x);
-bool isSymbol(boost::any x, const char* s);
+bool isSymbol(boost::any x, const std::string& s);
 bool isProcedure(boost::any x, const std::string& s);
 bool isClosure(boost::any x);
 bool isMacro(boost::any x);
