@@ -202,6 +202,7 @@ char chr(boost::any x);
 String str(boost::any x);
 Symbol sym(boost::any x);
 Vector vec(boost::any x);
+Procedure proc(boost::any x);
 
 boost::any first(boost::any x);
 boost::any rest(boost::any x);
@@ -225,7 +226,6 @@ std::string stringify(boost::any x);
 bool isPair(boost::any x);
 bool isSymbol(boost::any x);
 bool isSymbol(boost::any x, const char* s);
-bool isString(boost::any x);
 bool isClosure(boost::any x);
 bool isMacro(boost::any x);
 bool isEOF(boost::any x);

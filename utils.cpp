@@ -107,6 +107,19 @@ Vector vec(boost::any x)
     }
 }
 
+Procedure proc(boost::any x)
+{
+    try
+    {
+        return boost::any_cast<Procedure>(x);
+    }
+    catch (const boost::bad_any_cast& e)
+    {
+        error("expected a procedure, got: " + stringify(x));
+        return Procedure(new procedure);
+    }
+}
+
 //
 // NOT YET
 // inPort()
@@ -401,7 +414,6 @@ bool isSymbol(boost::any x, const char* s)
         return false;
     }
 }
-
 
 bool isClosure(boost::any x)
 {
