@@ -85,6 +85,19 @@ boost::any environment::set(boost::any var, boost::any val)
     else return error("unbound variable: " + s->name);
 }
 
+Environment environment::defPrim(const std::string& n, int id, int minArgs)
+{
+    define(n, Primitive(new primitive(id, minArgs, minArgs)));
+    return Environment(this);
+}
+
+Environment environment::defPrim(const std::string& n,
+                                 int id, int minArgs, int maxArgs)
+{
+    define(n, Primitive(new primitive(id, minArgs, maxArgs)));
+    return Environment(this);
+}
+
 bool environment::numberArgsOK(boost::any vars, boost::any vals)
 {
     return ((isEMPTY(vars) && isEMPTY(vals)) ||

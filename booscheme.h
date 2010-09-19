@@ -31,6 +31,7 @@ class primitive;
 class environment;
 class end_of_file;
 class misc;
+class interpreter;
 
 typedef boost::shared_ptr<boost::any>                         Object;
 typedef boost::shared_ptr<bool>                               Boolean;
@@ -132,6 +133,8 @@ public:
     boost::any lookup(Symbol sym);
     boost::any define(boost::any var, boost::any val);
     boost::any set(boost::any var, boost::any val);
+    Environment defPrim(const std::string& n, int id, int minArgs);
+    Environment defPrim(const std::string& n, int id, int minArgs, int maxArgs);
     bool numberArgsOK(boost::any vars, boost::any vals);
 
 private:
@@ -167,6 +170,17 @@ class macro : public closure
 
 class primitive : public procedure
 {
+public:
+    primitive(int id, int minArgs, int maxArgs);
+    virtual ~primitive() {}
+
+    static Environment installPrimitives(Environment env);
+    boost::any apply(interpreter* interp, boost::any args);
+
+private:
+    int id;
+    int minArgs;
+    int maxArgs;
 };
 
 class interpreter
