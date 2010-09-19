@@ -89,6 +89,7 @@ boost::any environment::set(boost::any var, boost::any val)
 bool environment::numberArgsOK(boost::any vars, boost::any vals)
 {
     return ((isEmpty(vars) && isEmpty(vals)) ||
-            (vars.type() == typeid(String)) || // FIXME isString()
-            (isPair(vars) && isPair(vals) && numberArgsOK(rest(vars), rest(vals))));
+            isSymbol(vars) ||
+            (isPair(vars) && isPair(vals) &&
+             numberArgsOK(rest(vars), rest(vals))));
 }
