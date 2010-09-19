@@ -110,7 +110,7 @@ boost::any input_port::readTail()
     }
     else if (isSymbol(token, ")"))
     {
-        return empty();
+        return EMPTY();
     }
     else if (isSymbol(token, "."))
     {
@@ -192,8 +192,8 @@ boost::any input_port::nextToken()
         in.get(ch);
         switch (ch)
         {
-        case 't': case 'T': return true;
-        case 'f': case 'F': return false;
+        case 't': case 'T': return TRUE();
+        case 'f': case 'F': return FALSE();
         case '(': // Vector
             pushChar('(');
             return listToVector(read());

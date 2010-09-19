@@ -5,7 +5,7 @@
 #include "booscheme.h"
 
 environment::environment()
-    : vars(empty()), vals(empty()), parent()
+    : vars(EMPTY()), vals(EMPTY()), parent()
 {
 }
 
@@ -19,7 +19,7 @@ boost::any environment::lookup(Symbol s)
     boost::any varList = vars;
     boost::any valList = vals;
 
-    while (!isEmpty(varList))
+    while (!isEMPTY(varList))
     {
         if (sym(first(varList)) == s)
         {
@@ -64,7 +64,7 @@ boost::any environment::set(boost::any var, boost::any val)
     boost::any varList = vars;
     boost::any valList = vals;
 
-    while (!isEmpty(varList))
+    while (!isEMPTY(varList))
     {
         if (sym(first(varList)) == s)
         {
@@ -87,7 +87,7 @@ boost::any environment::set(boost::any var, boost::any val)
 
 bool environment::numberArgsOK(boost::any vars, boost::any vals)
 {
-    return ((isEmpty(vars) && isEmpty(vals)) ||
+    return ((isEMPTY(vars) && isEMPTY(vals)) ||
             isSymbol(vars) ||
             (isPair(vars) && isPair(vals) &&
              numberArgsOK(rest(vars), rest(vals))));

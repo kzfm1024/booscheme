@@ -61,7 +61,7 @@ void test3()
     // boost::any nil = Empty(new empty);
     
     cout << stringify(cons(foo, bar)) << endl;
-    cout << stringify(cons(foo, cons(bar, empty()))) << endl;
+    cout << stringify(cons(foo, cons(bar, EMPTY()))) << endl;
 }
 
 void test4()

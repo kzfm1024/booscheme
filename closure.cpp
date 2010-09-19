@@ -7,7 +7,7 @@
 closure::closure(boost::any p, boost::any b, Environment e)
     : parms(p), env(e)
 {
-    if (isPair(b) && isEmpty(rest(b)))
+    if (isPair(b) && isEMPTY(rest(b)))
     {
         body = first(b);
     }

@@ -22,10 +22,24 @@ boost::any warn(const std::string& message)
     return Misc(new misc("#<warn>"));
 }
 
-boost::any empty()
+boost::any EMPTY()
 {
     static Object null;
     return null;
+}
+
+boost::any TRUE()
+{
+    static Boolean t;
+    if (!t) t = Boolean(new bool(true));
+    return t;
+}
+
+boost::any FALSE()
+{
+    static Boolean f;
+    if (!f) f = Boolean(new bool(false));
+    return f;
 }
 
 bool truth(boost::any x)
@@ -134,7 +148,7 @@ boost::any first(boost::any x)
     }
     catch (const boost::bad_any_cast& e)
     {
-        return empty();
+        return EMPTY();
     }
 }    
 
@@ -146,7 +160,7 @@ boost::any rest(boost::any x)
     }
     catch (const boost::bad_any_cast& e)
     {
-        return empty();
+        return EMPTY();
     }
 }
 
@@ -186,17 +200,17 @@ boost::any third(boost::any x)
 
 boost::any list(boost::any a, boost::any b)
 {
-    return cons(a, cons(b, empty()));
+    return cons(a, cons(b, EMPTY()));
 }
 
 boost::any list(boost::any a)
 {
-    return cons(a, empty());
+    return cons(a, EMPTY());
 }
 
 boost::any listStar(boost::any args)
 {
-    if (isEmpty(rest(args))) return first(args);
+    if (isEMPTY(rest(args))) return first(args);
     else return cons(first(args), listStar(rest(args)));
 }
 
@@ -207,7 +221,7 @@ Pair cons(boost::any a, boost::any b)
 
 boost::any reverse(boost::any x)
 {
-    boost::any result = empty();
+    boost::any result = EMPTY();
     while (isPair(x))
     {
         result = cons(first(x), result);
@@ -266,7 +280,7 @@ boost::any vectorToList(boost::any x)
     if (x.type() == typeid(Vector))
     {
         Vector vec = boost::any_cast<Vector>(x);
-        boost::any result = empty();
+        boost::any result = EMPTY();
         for (int i = vec->size() - 1; i >= 0; i--)
         {
             result = cons(vec->at(i), result);
@@ -276,7 +290,7 @@ boost::any vectorToList(boost::any x)
     else
     {
         error("expected a vector, got: " + stringify(x));
-        return empty();
+        return EMPTY();
     }
 }
 
@@ -290,7 +304,7 @@ static void stringifyPair(Pair p, bool quoted, std::ostringstream& buf);
 
 static void stringify(boost::any x, bool quoted, std::ostringstream& buf)
 {
-    if (isEmpty(x))
+    if (isEMPTY(x))
     {
         buf << "()";     
     }
@@ -315,9 +329,9 @@ static void stringify(boost::any x, bool quoted, std::ostringstream& buf)
     {
         buf << vec(x); // FIXME
     }
-    else if (x.type() == typeid(bool))
+    else if (x.type() == typeid(Boolean))
     {
-        if (boost::any_cast<bool>(x))
+        if (*(boost::any_cast<Boolean>(x)))
         {
             buf << "#t";
         }
@@ -344,7 +358,7 @@ static void stringifyPair(Pair p, bool quoted, std::ostringstream& buf)
 {
     std::string special;
 
-    if (isPair(p->second) && isEmpty(rest(p->second)))
+    if (isPair(p->second) && isEMPTY(rest(p->second)))
     {
         if      (isSymbol(p->first, "quote"))            { special = "'";  }
         else if (isSymbol(p->first, "quasiquote"))       { special = "`";  }
@@ -370,7 +384,7 @@ static void stringifyPair(Pair p, bool quoted, std::ostringstream& buf)
             tail = boost::any_cast<Pair>(tail)->second;
         }
         
-        if (!isEmpty(tail))
+        if (!isEMPTY(tail))
         {
             buf << " . ";
             stringify(tail, quoted, buf);
@@ -443,7 +457,7 @@ bool isEOF(boost::any x)
     return (x.type() == typeid(end_of_file)) ? true : false;
 }
 
-bool isEmpty(boost::any x)
+bool isEMPTY(boost::any x)
 {
     try
     {

@@ -58,7 +58,7 @@ boost::any interpreter::eval(boost::any x, Environment env)
             }
             else if (isSymbol(fn, "begin")) // BEGIN
             {
-                for (; !isEmpty(rest(args)); args = rest(args))
+                for (; !isEMPTY(rest(args)); args = rest(args))
                 {
                     eval(first(args), env);
                 }
@@ -83,7 +83,8 @@ boost::any interpreter::eval(boost::any x, Environment env)
             }
             else if (isSymbol(fn, "if")) // IF
             {
-                x = (truth(eval(first(args), env))) ? second(args) : third(args);
+                boost::any test = eval(first(args), env);
+                x = truth(test) ? second(args) : third(args);
             }
             else if (isSymbol(fn, "cond")) // COND
             {
@@ -128,9 +129,9 @@ boost::any interpreter::eval(boost::any x)
 
 boost::any interpreter::evalList(boost::any list, Environment env)
 {
-    if (isEmpty(list))
+    if (isEMPTY(list))
     {
-        return empty();
+        return EMPTY();
     }
     else if (!isPair(list))
     {
@@ -152,7 +153,7 @@ boost::any interpreter::reduceCond(boost::any clauses, Environment env)
     
     while (true)
     {
-        if (isEmpty(clauses)) return false; // FIXME
+        if (isEMPTY(clauses)) return FALSE();
 
         boost::any clause = first(clauses);
         clauses = first(clauses);
@@ -160,7 +161,7 @@ boost::any interpreter::reduceCond(boost::any clauses, Environment env)
         if (isSymbol(first(clause), "else") ||
             truth(result = eval(first(clause), env)))
         {
-            if (isEmpty(rest(clause)))
+            if (isEMPTY(rest(clause)))
             {
                 return list(symbol::make("quote"), result);
             }

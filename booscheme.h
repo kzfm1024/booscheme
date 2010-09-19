@@ -192,8 +192,9 @@ private:
 
 boost::any error(const std::string& message);
 boost::any warn(const std::string& message);
-// boost::any null();
-boost::any empty();
+boost::any EMPTY();
+boost::any TRUE();
+boost::any FALSE();
 bool truth(boost::any x);
 long int num(boost::any x);
 char chr(boost::any x);
@@ -228,7 +229,7 @@ bool isProcedure(boost::any x, const std::string& s);
 bool isClosure(boost::any x);
 bool isMacro(boost::any x);
 bool isEOF(boost::any x);
-bool isEmpty(boost::any x);
+bool isEMPTY(boost::any x);
 bool isMisc(boost::any x, const char* s);
 
 Number toNumber(const std::string& s); // FIXME
