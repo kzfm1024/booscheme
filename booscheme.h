@@ -222,13 +222,14 @@ boost::any write(boost::any x, OutputPort port, bool quoted);
 std::string stringify(boost::any x, bool quoted);
 std::string stringify(boost::any x);
 
-bool isEmpty(boost::any x);
-bool isEOF(boost::any x);
+bool isPair(boost::any x);
 bool isSymbol(boost::any x);
 bool isSymbol(boost::any x, const char* s);
-bool isPair(boost::any x);
+bool isString(boost::any x);
 bool isClosure(boost::any x);
 bool isMacro(boost::any x);
+bool isEOF(boost::any x);
+bool isEmpty(boost::any x);
 bool isMisc(boost::any x, const char* s);
 
 Number toNumber(const std::string& s); // FIXME

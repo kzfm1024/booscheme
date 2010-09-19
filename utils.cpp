@@ -379,22 +379,9 @@ std::string stringify(boost::any x)
     return stringify(x, true);
 }
         
-bool isEmpty(boost::any x)
+bool isPair(boost::any x)
 {
-    try
-    {
-        Object obj = boost::any_cast<Object>(x);
-        return obj ? false : true;
-    }
-    catch (const boost::bad_any_cast& e)
-    {
-        return false;
-    }
-}
-
-bool isEOF(boost::any x)
-{
-    return (x.type() == typeid(end_of_file)) ? true : false;
+    return (x.type() == typeid(Pair)) ? true : false;
 }
 
 bool isSymbol(boost::any x)
@@ -415,10 +402,6 @@ bool isSymbol(boost::any x, const char* s)
     }
 }
 
-bool isPair(boost::any x)
-{
-    return (x.type() == typeid(Pair)) ? true : false;
-}
 
 bool isClosure(boost::any x)
 {
@@ -428,6 +411,24 @@ bool isClosure(boost::any x)
 bool isMacro(boost::any x)
 {
     return (x.type() == typeid(Macro)) ? true : false;
+}
+
+bool isEOF(boost::any x)
+{
+    return (x.type() == typeid(end_of_file)) ? true : false;
+}
+
+bool isEmpty(boost::any x)
+{
+    try
+    {
+        Object obj = boost::any_cast<Object>(x);
+        return obj ? false : true;
+    }
+    catch (const boost::bad_any_cast& e)
+    {
+        return false;
+    }
 }
 
 bool isMisc(boost::any x, const char* s)
