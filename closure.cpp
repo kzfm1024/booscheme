@@ -1,5 +1,5 @@
 //
-// clojure.cpp
+// closure.cpp
 //
 
 #include "booscheme.h"
