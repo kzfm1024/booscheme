@@ -96,7 +96,8 @@ boost::any interpreter::eval(boost::any x, Environment env)
             }
             else if (isSymbol(fn, "macro"))
             {
-                // return Macro(new macro(first(args), rest(args), env); NOT YET
+                // FIXME
+                // return Macro(new macro(first(args), rest(args), env);
             }
             else
             {
@@ -115,7 +116,7 @@ boost::any interpreter::eval(boost::any x, Environment env)
                 }
                 else
                 {
-                    return x; // NOT YET: apply
+                    return x; // FIXME
                 }
             }
         }

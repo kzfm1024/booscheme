@@ -149,6 +149,9 @@ public:
     procedure() : name("anonymous procedure") {}
     virtual ~procedure() {}
 
+    virtual boost::any apply(interpreter* interp, boost::any args) = 0;
+
+public:
     std::string name;
 };
 
@@ -158,15 +161,19 @@ public:
     closure(boost::any p, boost::any b, Environment e);
     virtual ~closure() {}
 
+    boost::any apply(interpreter* interp, boost::any args);
+
 public:
     boost::any parms;
     boost::any body;
     Environment env;
 };
 
+/*
 class macro : public closure
 {
 };
+*/
 
 class primitive : public procedure
 {

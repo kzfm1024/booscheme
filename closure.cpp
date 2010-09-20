@@ -16,3 +16,8 @@ closure::closure(boost::any p, boost::any b, Environment e)
         body = cons(symbol::make("begin"), body);
     }
 }
+
+boost::any closure::apply(interpreter* interp, boost::any args)
+{
+    return interp->eval(body, Environment(new environment(parms, args, env)));
+}
