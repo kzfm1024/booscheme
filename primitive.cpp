@@ -68,7 +68,6 @@ primitive::installPrimitives(Environment env)
     int n = INT_MAX;
 
     env->defPrim("*",       	TIMES,     0, n);
-    env->defPrim("*",       	TIMES,     0, n);
     env->defPrim("+",       	PLUS,      0, n);
     env->defPrim("-",       	MINUS,     1, n);
     env->defPrim("/",       	DIVIDE,    1, n);
