@@ -132,11 +132,35 @@ Procedure proc(boost::any x)
     }
 }
 
-//
-// NOT YET
-// inPort()
-// outPort()
-//
+InputPort inPort(boost::any x, interpreter* interp)
+{
+    if (isEMPTY(x)) return interp->inputPort();
+
+    try
+    {
+        return boost::any_cast<InputPort>(x);
+    }
+    catch (const boost::bad_any_cast& e)
+    {
+        error("expected an input port, got: " + stringify(x));
+        return interp->inputPort(); // FIXME
+    }
+}
+
+OutputPort outPort(boost::any x, interpreter* interp)
+{
+    if (isEMPTY(x)) return interp->outputPort();
+
+    try
+    {
+        return boost::any_cast<OutputPort>(x);
+    }
+    catch (const boost::bad_any_cast& e)
+    {
+        error("expected an output port, got: " + stringify(x));
+        return interp->outputPort(); // FIXME
+    }
+}
 
 boost::any first(boost::any x)
 {

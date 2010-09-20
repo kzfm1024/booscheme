@@ -195,6 +195,9 @@ public:
     boost::any eval(boost::any x, Environment env);
     boost::any eval(boost::any x);
     
+    InputPort  inputPort()  { return input;  }
+    OutputPort outputPort() { return output; }
+
 private:
     boost::any evalList(boost::any list, Environment env);
     boost::any reduceCond(boost::any clauses, Environment env);
@@ -216,6 +219,8 @@ String str(boost::any x);
 Symbol sym(boost::any x);
 Vector vec(boost::any x);
 Procedure proc(boost::any x);
+InputPort inPort(boost::any x, interpreter* interp);
+OutputPort outPort(boost::any x, interpreter* interp);
 
 boost::any first(boost::any x);
 boost::any rest(boost::any x);
