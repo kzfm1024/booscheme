@@ -54,7 +54,6 @@ bool truth(boost::any x)
     }
 }
 
-#if 0
 long int num(boost::any x)
 {
     try
@@ -67,7 +66,6 @@ long int num(boost::any x)
         return 0;
     }
 }
-#endif
 
 char chr(boost::any x)
 {
@@ -230,15 +228,178 @@ boost::any reverse(boost::any x)
     return result;
 }
 
-/*
-bool eq(boost::any x, boost::any y)
+boost::any eq(boost::any x, boost::any y)
 {
-    
+    if (isEMPTY(x) && isEMPTY(y))
+    {
+        return TRUE();
+    }
+    else if (x.type() == typeid(Boolean) && y.type() == typeid(Boolean))
+    {
+        Boolean bx = boost::any_cast<Boolean>(x);
+        Boolean by = boost::any_cast<Boolean>(y);
+        return (*bx == *by) ? TRUE() : FALSE();
+    }
+    else if (isPair(x) && isPair(y))
+    {
+        Pair px = boost::any_cast<Pair>(x);
+        Pair py = boost::any_cast<Pair>(y);
+        return (px == py) ? TRUE() : FALSE();
+    }
+    else if (isSymbol(x) && isSymbol(y))
+    {
+        return (sym(x) == sym(y)) ? TRUE() : FALSE();
+    }
+    else if (x.type() == typeid(Number) && y.type() == typeid(Number))
+    {
+        Number nx = boost::any_cast<Number>(x);
+        Number ny = boost::any_cast<Number>(y);
+        return (nx == ny) ? TRUE() : FALSE();
+    }
+    else if (x.type() == typeid(Char) && y.type() == typeid(Char))
+    {
+        Char cx = boost::any_cast<Char>(x);
+        Char cy = boost::any_cast<Char>(y);
+        return (cx == cy) ? TRUE() : FALSE();
+    }
+    else if (x.type() == typeid(String) && y.type() == typeid(String))
+    {
+        String sx = boost::any_cast<String>(x);
+        String sy = boost::any_cast<String>(y);
+        return (sx == sy) ? TRUE() : FALSE();
+    }
+    else if (x.type() == typeid(Vector) && y.type() == typeid(Vector))
+    {
+        return (vec(x) == vec(y)) ? TRUE() : FALSE();
+    }
+    else if (x.type() == typeid(InputPort) && y.type() == typeid(InputPort))
+    {
+        InputPort ix = boost::any_cast<InputPort>(x);
+        InputPort iy = boost::any_cast<InputPort>(y);
+        return (ix == iy) ? TRUE() : FALSE();
+    }
+    else if (x.type() == typeid(OutputPort) && y.type() == typeid(OutputPort))
+    {
+        OutputPort ox = boost::any_cast<OutputPort>(x);
+        OutputPort oy = boost::any_cast<OutputPort>(y);
+        return (ox == oy) ? TRUE() : FALSE();
+    }
+    else if (isProcedure(x) && isProcedure(y))
+    {
+        return (proc(x) == proc(y)) ? TRUE() : FALSE();
+    }
+    else if (isEOF(x) && isEOF(y))
+    {
+        return TRUE();
+    }
+    else
+    {
+        return FALSE();
+    }
 }
-*/
 
-// equal()
-// eqv()
+boost::any eqv(boost::any x, boost::any y)
+{
+    if (truth(eq(x, y)))
+    {
+        return TRUE();
+    }
+    else if (x.type() == typeid(Number) && y.type() == typeid(Number))
+    {
+        return (num(x) == num(y)) ? TRUE() : FALSE(); // FIXME
+    }
+    else if (x.type() == typeid(Char) && y.type() == typeid(Char))
+    {
+        return (chr(x) == chr(y)) ? TRUE() : FALSE(); // FIXME
+    }
+    else
+    {
+        return FALSE();
+    }
+}
+
+boost::any equal(boost::any x, boost::any y)
+{
+    if (isEMPTY(x) && isEMPTY(y))
+    {
+        return TRUE();
+    }
+    else if (x.type() == typeid(Boolean) && y.type() == typeid(Boolean))
+    {
+        Boolean bx = boost::any_cast<Boolean>(x);
+        Boolean by = boost::any_cast<Boolean>(y);
+        return (*bx == *by) ? TRUE() : FALSE();
+    }
+    else if (isPair(x) && isPair(y))
+    {
+        Pair px = boost::any_cast<Pair>(x);
+        Pair py = boost::any_cast<Pair>(y);
+        if (truth(equal(first(x), first(y))) && truth(equal(rest(x), rest(y))))
+        {
+            return TRUE();
+        }
+        else
+        {
+            return FALSE();
+        }
+    }
+    else if (isSymbol(x) && isSymbol(y))
+    {
+        return (sym(x) == sym(y)) ? TRUE() : FALSE();
+    }
+    else if (x.type() == typeid(Number) && y.type() == typeid(Number))
+    {
+        return (num(x) == num(y)) ? TRUE() : FALSE(); // FIXME
+    }
+    else if (x.type() == typeid(Char) && y.type() == typeid(Char))
+    {
+        return (chr(x) == chr(y)) ? TRUE() : FALSE(); // FIXME
+    }
+    else if (x.type() == typeid(String) && y.type() == typeid(String))
+    {
+        String sx = boost::any_cast<String>(x);
+        String sy = boost::any_cast<String>(y);
+        return (*sx == *sy) ? TRUE() : FALSE();
+    }
+    else if (x.type() == typeid(Vector) && y.type() == typeid(Vector))
+    {
+        Vector vx = vec(x);
+        Vector vy = vec(y);
+
+        if (vx->size() != vy->size()) return FALSE();
+
+        for (int i = 0; i < vx->size(); i++)
+        {
+            if (!truth(equal(vx->at(i), vy->at(i)))) return FALSE();
+        }
+
+        return TRUE();
+    }
+    else if (x.type() == typeid(InputPort) && y.type() == typeid(InputPort))
+    {
+        InputPort ix = boost::any_cast<InputPort>(x);
+        InputPort iy = boost::any_cast<InputPort>(y);
+        return (ix == iy) ? TRUE() : FALSE();
+    }
+    else if (x.type() == typeid(OutputPort) && y.type() == typeid(OutputPort))
+    {
+        OutputPort ox = boost::any_cast<OutputPort>(x);
+        OutputPort oy = boost::any_cast<OutputPort>(y);
+        return (ox == oy) ? TRUE() : FALSE();
+    }
+    else if (isProcedure(x) && isProcedure(y))
+    {
+        return (proc(x) == proc(y)) ? TRUE() : FALSE();
+    }
+    else if (isEOF(x) && isEOF(y))
+    {
+        return TRUE();
+    }
+    else
+    {
+        return FALSE();
+    }
+}
 
 int length(boost::any x)
 {
@@ -427,6 +588,11 @@ bool isSymbol(boost::any x, const std::string& s)
     {
         return false;
     }
+}
+
+bool isProcedure(boost::any x)
+{
+    return (x.type() == typeid(Procedure)) ? true : false;
 }
 
 bool isProcedure(boost::any x, const std::string& s)

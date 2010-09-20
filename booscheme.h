@@ -210,8 +210,8 @@ boost::any EMPTY();
 boost::any TRUE();
 boost::any FALSE();
 bool truth(boost::any x);
-long int num(boost::any x);
-char chr(boost::any x);
+long int num(boost::any x); // FIXME
+char chr(boost::any x); // FIXME
 String str(boost::any x);
 Symbol sym(boost::any x);
 Vector vec(boost::any x);
@@ -228,10 +228,13 @@ boost::any list(boost::any a);
 boost::any listStar(boost::any args);
 Pair cons(boost::any a, boost::any b);
 boost::any reverse(boost::any x);
+boost::any eq(boost::any x, boost::any y);
+boost::any eqv(boost::any x, boost::any y);
+boost::any equal(boost::any x, boost::any y);
 int length(boost::any x);
-boost::any listToString(boost::any chars);
-boost::any listToVector(boost::any objs);
-boost::any vectorToList(boost::any x);
+boost::any listToString(boost::any chars); // FIXME: return type
+boost::any listToVector(boost::any objs);  // FIXME: return type
+boost::any vectorToList(boost::any x);     // FIXME: return type
 boost::any write(boost::any x, OutputPort port, bool quoted);
 std::string stringify(boost::any x, bool quoted);
 std::string stringify(boost::any x);
@@ -239,6 +242,7 @@ std::string stringify(boost::any x);
 bool isPair(boost::any x);
 bool isSymbol(boost::any x);
 bool isSymbol(boost::any x, const std::string& s);
+bool isProcedure(boost::any x);
 bool isProcedure(boost::any x, const std::string& s);
 bool isClosure(boost::any x);
 bool isMacro(boost::any x);
