@@ -161,7 +161,7 @@ public:
     closure(boost::any p, boost::any b, Environment e);
     virtual ~closure() {}
 
-    boost::any apply(interpreter* interp, boost::any args);
+    virtual boost::any apply(interpreter* interp, boost::any args);
 
 public:
     boost::any parms;
@@ -182,7 +182,7 @@ public:
     virtual ~primitive() {}
 
     static Environment installPrimitives(Environment env);
-    boost::any apply(interpreter* interp, boost::any args);
+    virtual boost::any apply(interpreter* interp, boost::any args);
 
 private:
     int id;
