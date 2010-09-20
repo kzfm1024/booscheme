@@ -149,7 +149,7 @@ public:
     procedure() : name("anonymous procedure") {}
     virtual ~procedure() {}
 
-    virtual boost::any apply(interpreter* interp, boost::any args) = 0;
+    virtual boost::any apply(interpreter* interp, boost::any args);
 
 public:
     std::string name;
