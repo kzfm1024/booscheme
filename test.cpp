@@ -79,10 +79,12 @@ void test4()
 
 int main()
 {
+#if 0
     test1();
     test2();
     test3();
     test4();
+#endif
     
     interpreter interp;
     interp.repl();

@@ -25,10 +25,12 @@ boost::any environment::lookup(Symbol s)
         {
             return first(valList);
         }
-        else if (sym(varList) == s)
+/*
+        else if (isSymbol(varList) && sym(varList) == s) // あり得る？
         {
             return valList;
         }
+*/
         else
         {
             varList = rest(varList);
@@ -45,10 +47,12 @@ boost::any environment::define(boost::any var, boost::any val)
     vars = cons(var, vars);
     vals = cons(val, vals);
 
+/*
     if (isProcedure(val, "anonymous procedure"))
     {
         proc(val)->name = sym(var)->name;
     }
+*/
 
     return var;
 }
@@ -87,14 +91,14 @@ boost::any environment::set(boost::any var, boost::any val)
 
 Environment environment::defPrim(const std::string& n, int id, int minArgs)
 {
-    define(n, Primitive(new primitive(id, minArgs, minArgs)));
+    define(symbol::make(n), Primitive(new primitive(id, minArgs, minArgs)));
     return Environment(this);
 }
 
 Environment environment::defPrim(const std::string& n,
                                  int id, int minArgs, int maxArgs)
 {
-    define(n, Primitive(new primitive(id, minArgs, maxArgs)));
+    define(symbol::make(n), Primitive(new primitive(id, minArgs, maxArgs)));
     return Environment(this);
 }
 

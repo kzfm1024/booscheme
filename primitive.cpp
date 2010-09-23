@@ -3,6 +3,7 @@
 //
 
 #include <limits.h> // for INT_MAX
+#include <sstream>
 #include "booscheme.h"
 
 /*
@@ -67,6 +68,9 @@ primitive::installPrimitives(Environment env)
 {
     int n = INT_MAX;
 
+    env->defPrim("car",     	CAR,       1);
+
+#if 0
     env->defPrim("*",       	TIMES,     0, n);
     env->defPrim("+",       	PLUS,      0, n);
     env->defPrim("-",       	MINUS,     1, n);
@@ -250,12 +254,55 @@ primitive::installPrimitives(Environment env)
     env->defPrim("error",    	    ERROR,     0, n);
     env->defPrim("time-call",          TIMECALL,  1, 2);
     env->defPrim("_list*",             LISTSTAR,  0, n);
-    ;
+#endif
 
     return env;
 }
 
 boost::any primitive::apply(interpreter* interp, boost::any args)
 {
-    return TRUE(); // FIXME
+    // First make sure there are the right number of arguments. 
+    int nArgs = length(args);
+    if (nArgs < minArgs)
+    {
+        std::stringstream msg;
+        msg << "too few args, " << nArgs << ", for ";
+        msg << name << ": " << stringify(args);
+        return error(msg.str());
+    }
+    else if (nArgs > maxArgs)
+    {
+        std::stringstream msg;
+        msg << "too many args, " << nArgs << ", for ";
+        msg << name << ": " << stringify(args);
+        return error(msg.str());
+    }
+
+    boost::any x = first(args);
+    boost::any y = second(args);
+    
+    switch (id)
+    {
+        ////////////////  SECTION 6.1 BOOLEANS
+    case NOT:       	return BOOLEAN(!truth(x));
+    case BOOLEANQ:  	return BOOLEAN(x.type() == typeid(Boolean));
+
+        ////////////////  SECTION 6.2 EQUIVALENCE PREDICATES
+    case EQVQ: 		return eqv(x, y);
+    case EQQ: 		return eq(x, y);
+    case EQUALQ:  	return equal(x, y);
+
+        ////////////////  SECTION 6.3 LISTS AND PAIRS
+    case PAIRQ:  	    return BOOLEAN(isPair(x));
+    case CAR:  	        return first(x);
+    case CDR:  	        return rest(x);
+    case SETCAR:        return setFirst(x, y);
+    case SETCDR:        return setRest(x, y);
+
+    default:
+        std::stringstream msg;
+        msg << "internal error: unknown primitive: ";
+        msg << name << "applied to " << stringify(args);
+        return error(msg.str());
+    }        
 }

@@ -15,8 +15,8 @@
 
 #if defined(_ENABLE_BOODEBUG_)
 #define BOODEBUG(x) x
-boost::any p(boost::any x);
-boost::any p(const std::string& msg, boost::any x);
+void p(boost::any x);
+void p(const std::string& msg, boost::any x);
 #else
 #define BOODEBUG(x)
 #endif
@@ -219,6 +219,7 @@ boost::any warn(const std::string& message);
 boost::any EMPTY();
 boost::any TRUE();
 boost::any FALSE();
+boost::any BOOLEAN(bool x);
 bool truth(boost::any x);
 long int num(boost::any x); // FIXME
 char chr(boost::any x); // FIXME
