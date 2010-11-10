@@ -9,6 +9,7 @@ interpreter::interpreter()
     input = InputPort(new input_port(std::cin));
     output = OutputPort(new output_port(std::cout));
     globalEnvironment = Environment(new environment);
+    primitive::installPrimitives(globalEnvironment);
 }
 
 void interpreter::repl()
@@ -42,6 +43,7 @@ boost::any interpreter::eval(boost::any x, Environment env)
     {
         if (isSymbol(x))        // VARIABLE
         {
+            BOODEBUG(std::cout << "VARIABLE" << std::endl);
             return env->lookup(sym(x));
         }
         else if (!isPair(x))    // CONSTANT
@@ -116,7 +118,7 @@ boost::any interpreter::eval(boost::any x, Environment env)
                 }
                 else
                 {
-                    return x; // FIXME
+                    return proc(fn)->apply(this, evalList(args, env));
                 }
             }
         }

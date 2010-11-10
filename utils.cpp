@@ -42,6 +42,11 @@ boost::any FALSE()
     return f;
 }
 
+boost::any BOOLEAN(bool x)
+{
+    return x ? TRUE() : FALSE();
+}
+
 bool truth(boost::any x)
 {
     if (x.type() == typeid(Boolean) && *(boost::any_cast<Boolean>(x)) == false)
@@ -527,7 +532,8 @@ static void stringify(boost::any x, bool quoted, std::ostringstream& buf)
     }
     else if (x.type() == typeid(Symbol))
     {
-        buf << boost::any_cast<Symbol>(x)->name;
+        BOODEBUG(std::cout << "DEBUG: SYMBOL" << std::endl);
+        buf << sym(x)->name;
     }
     else if (x.type() == typeid(Misc))
     {
@@ -695,12 +701,12 @@ Number toNumber(const std::string& s)
 }
 
 #if defined(_ENABLE_BOODEBUG_)
-boost::any p(boost::any x)
+void p(boost::any x)
 {
     std::cout << stringify(x) << std::endl << std::flush;
 }
 
-boost::any p(const std::string& msg, boost::any x)
+void p(const std::string& msg, boost::any x)
 {
     std::cout << msg << ": " << stringify(x) << std::endl << std::flush;
 }
