@@ -4,7 +4,7 @@
 
 (define apply-in-underlying-scheme apply)
 
-(define (eval exp env)
+(define (k-eval exp env)
   (cond ((self-evaluating? exp) exp)
         ((variable? exp) (lookup-variable-value exp env))
         ((quoted? exp) (text-of-quotation exp))
@@ -17,19 +17,14 @@
                          env))
         ((begin? exp) 
          (eval-sequence (begin-actions exp) env))
-        ((cond? exp) (eval (cond->if exp) env))
+        ((cond? exp) (k-eval (cond->if exp) env))
         ((application? exp)
-         (apply-mceval (eval (operator exp) env)
-                       (list-of-values (operands exp) env)))
+         (k-apply (k-eval (operator exp) env)
+                  (list-of-values (operands exp) env)))
         (else
          (error "Unknown expression type -- EVAL" exp))))
 
-;;;
-;;; SICP では apply になっているが Gauche では apply を再定義すると
-;;; 動作しなかったため名前を apply-mceval に変更
-;;;
-;(define (apply procedure arguments)
-(define (apply-mceval procedure arguments)
+(define (k-apply procedure arguments)
   (cond ((primitive-procedure? procedure)
          (apply-primitive-procedure procedure arguments))
         ((compound-procedure? procedure)
@@ -41,33 +36,33 @@
              (procedure-environment procedure))))
         (else
          (error
-          "Unknown procedure type -- APPLY-MCEVAL" procedure))))
+          "Unknown procedure type -- K-APPLY" procedure))))
 
 (define (list-of-values exps env)
   (if (no-operands? exps)
       '()
-      (cons (eval (first-operand exps) env)
+      (cons (k-eval (first-operand exps) env)
             (list-of-values (rest-operands exps) env))))
 
 (define (eval-if exp env)
-  (if (true? (eval (if-predicate exp) env))
-      (eval (if-consequent exp) env)
-      (eval (if-alternative exp) env)))
+  (if (true? (k-eval (if-predicate exp) env))
+      (k-eval (if-consequent exp) env)
+      (k-eval (if-alternative exp) env)))
 
 (define (eval-sequence exps env)
-  (cond ((last-exp? exps) (eval (first-exp exps) env))
-        (else (eval (first-exp exps) env)
+  (cond ((last-exp? exps) (k-eval (first-exp exps) env))
+        (else (k-eval (first-exp exps) env)
               (eval-sequence (rest-exps exps) env))))
 
 (define (eval-assignment exp env)
   (set-variable-value! (assignment-variable exp)
-                       (eval (assignment-value exp) env)
+                       (k-eval (assignment-value exp) env)
                        env)
   'ok)
 
 (define (eval-definition exp env)
   (define-variable! (definition-variable exp)
-                    (eval (definition-value exp) env)
+                    (k-eval (definition-value exp) env)
                     env)
   'ok)
 
@@ -76,6 +71,7 @@
 (define (self-evaluating? exp)
   (cond ((number? exp) #t)
         ((string? exp) #t)
+        ((boolean? exp) #t)
         (else #f)))
 
 (define (quoted? exp)
@@ -130,7 +126,7 @@
 (define (if-alternative exp)
   (if (not (null? (cdddr exp)))
       (cadddr exp)
-      'false))
+      #f))
 
 (define (make-if predicate consequent alternative)
   (list 'if predicate consequent alternative))
@@ -150,7 +146,6 @@
         (else (make-begin seq))))
 
 (define (make-begin seq) (cons 'begin seq))
-
 
 (define (application? exp) (pair? exp))
 (define (operator exp) (car exp))
@@ -177,7 +172,7 @@
 
 (define (expand-clauses clauses)
   (if (null? clauses)
-      'false                          ; no else clause
+      #f                                ; no else clause
       (let ((first (car clauses))
             (rest (cdr clauses)))
         (if (cond-else-clause? first)
@@ -188,15 +183,6 @@
             (make-if (cond-predicate first)
                      (sequence->exp (cond-actions first))
                      (expand-clauses rest))))))
-
-;;;SECTION 4.1.3
-
-(define (true? x)
-  (not (eq? x #f)))
-
-(define (false? x)
-  (eq? x #f))
-
 
 (define (make-procedure parameters body env)
   (list 'procedure parameters body env))
@@ -281,11 +267,9 @@
          (extend-environment (primitive-procedure-names)
                              (primitive-procedure-objects)
                              the-empty-environment)))
-    (define-variable! 'true #t initial-env)
-    (define-variable! 'false #f initial-env)
+    ;(define-variable! 'true #t initial-env)
+    ;(define-variable! 'false #f initial-env)
     initial-env))
-
-;[do later] (define the-global-environment (setup-environment))
 
 (define (primitive-procedure? proc)
   (tagged-list? proc 'primitive))
@@ -300,8 +284,6 @@
   (map (lambda (proc) (list 'primitive (cadr proc)))
        primitive-procedures))
 
-;[moved to start of file] (define apply-in-underlying-scheme apply)
-
 (define (apply-primitive-procedure proc args)
   (apply-in-underlying-scheme
    (primitive-implementation proc) args))
@@ -312,7 +294,7 @@
 (define (driver-loop)
   (prompt-for-input input-prompt)
   (let ((input (read)))
-    (let ((output (eval input the-global-environment)))
+    (let ((output (k-eval input the-global-environment)))
       (announce-output output-prompt)
       (user-print output)))
   (driver-loop))
