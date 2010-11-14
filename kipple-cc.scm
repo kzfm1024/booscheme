@@ -40,7 +40,6 @@
                 (cc val)
                 (eval-sequence (rest-exps exps) env cc)))))
 
-#|
 (define (k-map-eval exps env cc)
   (if (null? exps)
       (cc '())
@@ -48,8 +47,8 @@
               (lambda (x)
                 (k-map-eval (rest-exps exps) env
                             (lambda (y) (cc (cons x y))))))))
-|#
 
+#|
 (define (k-map-eval exps env cc)
   (if (null? (rest-exps exps))
       (k-eval (first-exp exps) env cc)
@@ -57,12 +56,15 @@
               (lambda (x)
                 (k-map-eval (rest-exps exps) env
                             (lambda (y) (cc (cons x y))))))))
+|#
+
+(define k-apply apply)
 
 (define (k-eval-apply exps env cc)
   (k-map-eval exps env
               (lambda (exp)
                 #?=exp
-                (apply (operator exp) cc (operands exp)))))
+                (k-apply (operator exp) cc (operands exp)))))
 
 (define (eval-assignment exp env cc)
   (k-eval (assignment-value exp) env
@@ -340,7 +342,7 @@
 
 (use slib)
 (require 'trace)
-(trace k-map-eval k-eval-apply)
+(trace k-map-eval k-eval-apply k-apply)
 
 (driver-loop)
 
