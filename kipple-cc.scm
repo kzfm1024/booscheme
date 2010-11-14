@@ -10,38 +10,20 @@
         ((definition? exp) (eval-definition exp env cc))
         ((if? exp) (eval-if exp env cc))
         ((lambda? exp) 
-         (make-procedure (lambda-parameters exp)
-                         (lambda-body exp)
-                         env cc))
+         (cc (lambda (cont . args)
+               (if (null? args)
+                   (k-eval (lambda-body exp) env cont)
+                   (k-eval (lambda-body exp) 
+                           (extend-environment 
+                            (lambda-parameters exp) args env)
+                           cont)))))
         ((begin? exp) 
          (eval-sequence (begin-actions exp) env cc))
         ;((cond? exp) (cc (k-eval (cond->if exp) env))) ; NOT YET
         ((application? exp)
-         (k-apply (k-eval (operator exp) env cc)
-                  (list-of-values (operands exp) env cc)
-                  cc))
+         (k-eval-apply exp env cc))
         (else
          (error "Unknown expression type -- EVAL" exp))))
-
-(define (k-apply procedure arguments cc)
-  (cond ((primitive-procedure? procedure)
-         (apply-primitive-procedure procedure arguments cc))
-        ((compound-procedure? procedure)
-         (eval-sequence (procedure-body procedure)
-                        (extend-environments
-                         (procedure-parameters procedure)
-                         arguments
-                         (procedure-environment procedure))
-                        cc))
-        (else
-         (error
-          "Unknown procedure type -- K-APPLY" procedure))))
-
-(define (list-of-values exps env cc)
-  (if (no-operands? exps)
-      '()
-      (cons (k-eval (first-operand exps) env cc)
-            (list-of-values (rest-operands exps) env cc))))
 
 (define (eval-if exp env cc)
   (k-eval (if-predicate exp) env
@@ -58,6 +40,30 @@
                 (cc val)
                 (eval-sequence (rest-exps exps) env cc)))))
 
+#|
+(define (k-map-eval exps env cc)
+  (if (null? exps)
+      (cc '())
+      (k-eval (first-exp exps) env
+              (lambda (x)
+                (k-map-eval (rest-exps exps) env
+                            (lambda (y) (cc (cons x y))))))))
+|#
+
+(define (k-map-eval exps env cc)
+  (if (null? (rest-exps exps))
+      (k-eval (first-exp exps) env cc)
+      (k-eval (first-exp exps) env
+              (lambda (x)
+                (k-map-eval (rest-exps exps) env
+                            (lambda (y) (cc (cons x y))))))))
+
+(define (k-eval-apply exps env cc)
+  (k-map-eval exps env
+              (lambda (exp)
+                #?=exp
+                (apply (operator exp) cc (operands exp)))))
+
 (define (eval-assignment exp env cc)
   (k-eval (assignment-value exp) env
           (lambda (val)
@@ -70,7 +76,7 @@
           (lambda (val)
             (cc (begin
                   (define-variable! (definition-variable exp) val env)
-                  (print env) ; DEBUG
+                  ;(print env) ; DEBUG
                   'ok)))))
 
 (define (self-evaluating? exp)
@@ -263,8 +269,6 @@
     (scan (frame-variables frame)
           (frame-values frame))))
 
-;;;SECTION 4.1.4
-
 (define (setup-environment)
   (let ((initial-env
          (extend-environment (primitive-procedure-names)
@@ -274,9 +278,6 @@
     ;(define-variable! 'false #f initial-env)
     initial-env))
 
-(define (primitive-procedure? proc)
-  (tagged-list? proc 'primitive))
-
 (define (primitive-implementation proc) (cadr proc))
 
 (define (primitive-procedure-names)
@@ -285,8 +286,7 @@
 
 (define (primitive-procedure-objects)
   (map (lambda (proc)
-         (list 'primitive
-               (lambda (cc . args) (cc (apply (cadr proc) args)))))
+         (lambda (cont . args) (cont (apply (cadr proc) args))))
        primitive-procedures))
 
 (define (apply-primitive-procedure proc args cc)
@@ -338,4 +338,10 @@
 
 (define the-global-environment (setup-environment))
 
+(use slib)
+(require 'trace)
+(trace k-map-eval k-eval-apply)
+
 (driver-loop)
+
+; ((lambda (x) x) x)
