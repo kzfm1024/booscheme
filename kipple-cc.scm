@@ -185,18 +185,6 @@
                      (expand-clauses rest))))))
 |#
 
-#|
-(define (make-procedure parameters body env cc)
-  (list 'procedure parameters body env))
-
-(define (compound-procedure? p)
-  (tagged-list? p 'procedure))
-
-(define (procedure-parameters p) (cadr p))
-(define (procedure-body p) (caddr p))
-(define (procedure-environment p) (cadddr p))
-|#
-
 (define (enclosing-environment env) (cdr env))
 
 (define (first-frame env) (car env))
@@ -266,8 +254,6 @@
          (extend-environment (primitive-procedure-names)
                              (primitive-procedure-objects)
                              the-empty-environment)))
-    ;(define-variable! 'true #t initial-env)
-    ;(define-variable! 'false #f initial-env)
     initial-env))
 
 (define (primitive-implementation proc) (cadr proc))
@@ -303,17 +289,7 @@
 (define (announce-output string)
   (newline) (display string) (newline))
 
-#|
-(define (user-print object)
-  (if (compound-procedure? object)
-      (display (list 'compound-procedure
-                     (procedure-parameters object)
-                     (procedure-body object)
-                     '<procedure-env>))
-      (display object)))
-|#
-
-(define (user-print object) (display object)))
+(define (user-print object) (display object))
 
 (define primitive-procedures
   (list (list 'car car)
@@ -332,7 +308,12 @@
         (list 'exit exit) ; for Gauche
         ))
 
+(define (k-call/cc cc computation)
+  (computation cc (lambda (cont val) cc val)))
+
 (define the-global-environment (setup-environment))
+(define-variable! 'call/cc k-call/cc the-global-environment)
+(define-variable! 'call-with-current-continuation k-call/cc the-global-environment)
 
 ;(use slib)
 ;(require 'trace)
