@@ -12,11 +12,11 @@
         ((lambda? exp) 
          (cc (lambda (cont . args)
                (if (null? args)
-                   (k-eval (lambda-body exp) env cont)
-                   (k-eval (lambda-body exp) 
-                           (extend-environment 
-                            (lambda-parameters exp) args env)
-                           cont)))))
+                   (eval-sequence (lambda-body exp) env cont)
+                   (eval-sequence (lambda-body exp) 
+                                  (extend-environment 
+                                   (lambda-parameters exp) args env)
+                                  cont)))))
         ((begin? exp) 
          (eval-sequence (begin-actions exp) env cc))
         ;((cond? exp) (cc (k-eval (cond->if exp) env))) ; NOT YET
@@ -41,30 +41,18 @@
                 (eval-sequence (rest-exps exps) env cc)))))
 
 (define (k-map-eval exps env cc)
-  (if (null? exps)
-      (cc '())
+  (if (last-exp? exps)
+      (k-eval (first-exp exps) env
+              (lambda (x) (cc (list x))))
       (k-eval (first-exp exps) env
               (lambda (x)
                 (k-map-eval (rest-exps exps) env
                             (lambda (y) (cc (cons x y))))))))
-
-#|
-(define (k-map-eval exps env cc)
-  (if (null? (rest-exps exps))
-      (k-eval (first-exp exps) env cc)
-      (k-eval (first-exp exps) env
-              (lambda (x)
-                (k-map-eval (rest-exps exps) env
-                            (lambda (y) (cc (cons x y))))))))
-|#
-
-(define k-apply apply)
 
 (define (k-eval-apply exps env cc)
   (k-map-eval exps env
               (lambda (exp)
-                #?=exp
-                (k-apply (operator exp) cc (operands exp)))))
+                (apply (operator exp) cc (operands exp)))))
 
 (define (eval-assignment exp env cc)
   (k-eval (assignment-value exp) env
@@ -167,6 +155,7 @@
 (define (rest-operands ops) (cdr ops))
 
 
+#|
 (define (cond? exp) (tagged-list? exp 'cond))
 
 (define (cond-clauses exp) (cdr exp))
@@ -194,18 +183,19 @@
             (make-if (cond-predicate first)
                      (sequence->exp (cond-actions first))
                      (expand-clauses rest))))))
+|#
 
+#|
 (define (make-procedure parameters body env cc)
   (list 'procedure parameters body env))
 
 (define (compound-procedure? p)
   (tagged-list? p 'procedure))
 
-
 (define (procedure-parameters p) (cadr p))
 (define (procedure-body p) (caddr p))
 (define (procedure-environment p) (cadddr p))
-
+|#
 
 (define (enclosing-environment env) (cdr env))
 
@@ -313,6 +303,7 @@
 (define (announce-output string)
   (newline) (display string) (newline))
 
+#|
 (define (user-print object)
   (if (compound-procedure? object)
       (display (list 'compound-procedure
@@ -320,6 +311,9 @@
                      (procedure-body object)
                      '<procedure-env>))
       (display object)))
+|#
+
+(define (user-print object) (display object)))
 
 (define primitive-procedures
   (list (list 'car car)
@@ -340,10 +334,8 @@
 
 (define the-global-environment (setup-environment))
 
-(use slib)
-(require 'trace)
-(trace k-map-eval k-eval-apply k-apply)
+;(use slib)
+;(require 'trace)
+;(trace k-map-eval k-eval-apply)
 
 (driver-loop)
-
-; ((lambda (x) x) x)
