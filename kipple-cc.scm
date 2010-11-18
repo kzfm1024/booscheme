@@ -5,6 +5,9 @@
 (define (k-eval exp env cc)
   (cond ((self-evaluating? exp) (cc exp))
         ((variable? exp) (cc (lookup-variable-value exp env)))
+        ;;
+        ;; macro
+        ;;
         ((quoted? exp) (cc (text-of-quotation exp)))
         ((assignment? exp) (eval-assignment exp env cc))
         ((definition? exp) (eval-definition exp env cc))
@@ -66,7 +69,6 @@
           (lambda (val)
             (cc (begin
                   (define-variable! (definition-variable exp) val env)
-                  ;(print env) ; DEBUG
                   'ok)))))
 
 (define (self-evaluating? exp)
@@ -150,9 +152,9 @@
 (define (operator exp) (car exp))
 (define (operands exp) (cdr exp))
 
-(define (no-operands? ops) (null? ops))
-(define (first-operand ops) (car ops))
-(define (rest-operands ops) (cdr ops))
+;;(define (no-operands? ops) (null? ops))
+;;(define (first-operand ops) (car ops))
+;;(define (rest-operands ops) (cdr ops))
 
 
 #|
@@ -249,14 +251,17 @@
     (scan (frame-variables frame)
           (frame-values frame))))
 
+(define (k-call/cc cc proc)
+  (proc cc (lambda (cont val) (cc val))))
+
 (define (setup-environment)
   (let ((initial-env
          (extend-environment (primitive-procedure-names)
                              (primitive-procedure-objects)
                              the-empty-environment)))
+    (define-variable! 'call/cc k-call/cc initial-env)
+    (define-variable! 'call-with-current-continuation k-call/cc initial-env)
     initial-env))
-
-(define (primitive-implementation proc) (cadr proc))
 
 (define (primitive-procedure-names)
   (map car
@@ -266,9 +271,6 @@
   (map (lambda (proc)
          (lambda (cont . args) (cont (apply (cadr proc) args))))
        primitive-procedures))
-
-(define (apply-primitive-procedure proc args cc)
-  (apply (primitive-implementation proc) (cons cc args)))
 
 (define input-prompt ";;; M-Eval input:")
 (define output-prompt ";;; M-Eval value:")
@@ -308,15 +310,9 @@
         (list 'exit exit) ; for Gauche
         ))
 
-(define (k-call/cc cc computation)
-  (computation cc (lambda (cont val) cc val)))
-
 (define the-global-environment (setup-environment))
-(define-variable! 'call/cc k-call/cc the-global-environment)
-(define-variable! 'call-with-current-continuation k-call/cc the-global-environment)
-
-;(use slib)
-;(require 'trace)
-;(trace k-map-eval k-eval-apply)
-
 (driver-loop)
+
+#;(+ 1 (call/cc (lambda (cc)
+                (set! old-cc cc)
+                (+ 20 (cc 300)))))
