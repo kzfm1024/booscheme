@@ -18,7 +18,7 @@
                                    (lambda-parameters exp) args env)
                                   cont)))))
         ((begin? exp) (eval-sequence (begin-actions exp) env cc))
-        ((macro? exp) (k-eval (macro-expand exp) env cc))
+        ((macro? exp env) (k-eval (macro-expand exp env) env cc))
         ((application? exp) (k-apply exp env cc))
         (else
          (error "Unknown expression type -- EVAL" exp))))
@@ -159,15 +159,17 @@
 
 ;; macro
 
-(define (macro? exp) (tagged-list? exp 'macro))
+(define (macro? exp env) 
+  (and (variable? (car exp))
+       (tagged-list? (lookup-variable-value (car exp) env) 'macro)))
 
 (define (macro-parameters exp) (cadr exp))
 (define (macro-body exp) (cddr exp))
 
-(define (macro-expand exp)
-  #?=exp
-  (make-lambda (macro-parameters exp)
-               (macro-body exp)))
+(define (macro-expand exp env)
+  (let ((m (lookup-variable-value (car exp) env)))
+    (cons (make-lambda (macro-parameters m) (macro-body m))
+          (cdr exp))))
 
 ;; environment
 
@@ -187,12 +189,28 @@
   (set-car! frame (cons var (car frame)))
   (set-cdr! frame (cons val (cdr frame))))
 
+#|
 (define (extend-environment vars vals base-env)
   (if (= (length vars) (length vals))
       (cons (make-frame vars vals) base-env)
       (if (< (length vars) (length vals))
           (error "Too many arguments supplied" vars vals)
           (error "Too few arguments supplied" vars vals))))
+|#
+
+(define (extend-environment vars vals base-env)
+  (cond ((list? vars) ; vars is like (x y)
+         (if (= (length vars) (length vals))
+             (cons (make-frame vars vals) base-env)
+             (if (< (length vars) (length vals))
+                 (error "Too many arguments supplied" vars vals)
+                 (error "Too few arguments supplied" vars vals))))
+        ((pair? vars) ; vars is like (x . args)
+         (cons (make-frame (list (car vars) (cdr vars))
+                           (list (car vals) (cdr vals)))
+               base-env))
+        (else ; vars is like args
+         (cons (make-frame (list vars) (list vals)) base-env))))
 
 (define (lookup-variable-value var env)
   (define (env-loop env)
