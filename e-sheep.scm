@@ -5,9 +5,6 @@
 (define (k-eval exp env cc)
   (cond ((self-evaluating? exp) (cc exp))
         ((variable? exp) (cc (lookup-variable-value exp env)))
-        ;;
-        ;; macro
-        ;;
         ((quoted? exp) (cc (text-of-quotation exp)))
         ((assignment? exp) (eval-assignment exp env cc))
         ((definition? exp) (eval-definition exp env cc))
@@ -21,7 +18,7 @@
                                    (lambda-parameters exp) args env)
                                   cont)))))
         ((begin? exp) (eval-sequence (begin-actions exp) env cc))
-        ;((cond? exp) (cc (k-eval (cond->if exp) env))) ; NOT YET
+        ((macro? exp) (k-eval (macro-expand exp) env cc))
         ((application? exp) (k-apply exp env cc))
         (else
          (error "Unknown expression type -- EVAL" exp))))
@@ -69,23 +66,27 @@
             (lambda (exp)
               (apply (operator exp) cc (operands exp)))))
 
+(define (tagged-list? exp tag)
+  (if (pair? exp)
+      (eq? (car exp) tag)
+      #f))
+
 (define (self-evaluating? exp)
   (cond ((number? exp) #t)
         ((string? exp) #t)
         ((boolean? exp) #t)
         (else #f)))
 
+(define (variable? exp) (symbol? exp))
+
+;; quote
+
 (define (quoted? exp)
   (tagged-list? exp 'quote))
 
 (define (text-of-quotation exp) (cadr exp))
 
-(define (tagged-list? exp tag)
-  (if (pair? exp)
-      (eq? (car exp) tag)
-      #f))
-
-(define (variable? exp) (symbol? exp))
+;; set!
 
 (define (assignment? exp)
   (tagged-list? exp 'set!))
@@ -93,6 +94,8 @@
 (define (assignment-variable exp) (cadr exp))
 
 (define (assignment-value exp) (caddr exp))
+
+;; define
 
 (define (definition? exp)
   (tagged-list? exp 'define))
@@ -108,6 +111,8 @@
       (make-lambda (cdadr exp)
                    (cddr exp))))
 
+;; lambda
+
 (define (lambda? exp) (tagged-list? exp 'lambda))
 
 (define (lambda-parameters exp) (cadr exp))
@@ -116,6 +121,7 @@
 (define (make-lambda parameters body)
   (cons 'lambda (cons parameters body)))
 
+;; if
 
 (define (if? exp) (tagged-list? exp 'if))
 
@@ -127,6 +133,8 @@
   (if (not (null? (cdddr exp)))
       (cadddr exp)
       #f))
+
+;; begin!
 
 (define (begin? exp) (tagged-list? exp 'begin))
 
@@ -143,9 +151,25 @@
 
 (define (make-begin seq) (cons 'begin seq))
 
+;; aplication
+
 (define (application? exp) (pair? exp))
 (define (operator exp) (car exp))
 (define (operands exp) (cdr exp))
+
+;; macro
+
+(define (macro? exp) (tagged-list? exp 'macro))
+
+(define (macro-parameters exp) (cadr exp))
+(define (macro-body exp) (cddr exp))
+
+(define (macro-expand exp)
+  #?=exp
+  (make-lambda (macro-parameters exp)
+               (macro-body exp)))
+
+;; environment
 
 (define (enclosing-environment env) (cdr env))
 
@@ -221,6 +245,15 @@
                              the-empty-environment)))
     (define-variable! 'call/cc k-call/cc initial-env)
     (define-variable! 'call-with-current-continuation k-call/cc initial-env)
+    (define-variable!
+      'and
+      '(macro args
+         (if (null? args)
+             #t
+             (if (null? (cdr args))
+                 (car args)
+                 (list 'if (car args) (cons 'and (cdr args)) #f))))
+      initial-env)
     initial-env))
 
 (define (primitive-procedure-names)
@@ -250,26 +283,16 @@
         ))
 
 (define (e-sheep)
-  (define input-prompt ";;; M-Eval input:")
-  (define output-prompt ";;; M-Eval value:")
-  (define (prompt-for-input string)
-    (newline) (newline) (display string) (newline))
-  (define (announce-output string)
-    (newline) (display string) (newline))
-  (define (user-print object) (display object))
-  (let repl ((env (setup-environment)))
-    (prompt-for-input input-prompt)
+  (define (prompt-for-input)
+    (newline) (newline) (display ";;; M-Eval input:") (newline))
+  (define (announce-output)
+    (newline) (display ";;; M-Eval value:") (newline))
+  (let loop ((env (setup-environment)))
+    (prompt-for-input)
     (let ((input (read)))
       (k-eval input 
               env
               (lambda (cc)
-                (announce-output output-prompt)
-                (user-print cc))))
-    (repl env)))
-
-;(+ 1 (call/cc (lambda (cc)
-;                (set! old-cc cc)
-;                (+ 20 (cc 300)))))
-(+ 1 (call/cc (lambda (cc)
-                (set! old-cc cc)
-                (+ 20 (cc 300)))))
+                (announce-output)
+                (display cc))))
+    (loop env)))
