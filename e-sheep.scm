@@ -2,7 +2,7 @@
 ;; e-sheep.scm - From Philip K. Dick's "Do Androids Dreams of Electric Sheep?"
 ;;
 
-(define (k-eval exp env cc)
+(define (e-eval exp env cc)
   (cond ((self-evaluating? exp) (cc exp))
         ((variable? exp) (cc (lookup-variable-value exp env)))
         ((quoted? exp) (cc (text-of-quotation exp)))
@@ -18,35 +18,38 @@
                                    (lambda-parameters exp) args env)
                                   cont)))))
         ((begin? exp) (eval-sequence (begin-actions exp) env cc))
-        ((macro? exp env) (k-eval (macro-expand exp env) env cc))
-        ((application? exp) (k-apply exp env cc))
+        ((macro? exp env)
+         (e-eval (macro-expand exp env) env
+                 (lambda (expanded)
+                   (e-eval expanded env cc))))
+        ((application? exp) (e-apply exp env cc))
         (else
          (error "Unknown expression type -- EVAL" exp))))
 
 (define (eval-assignment exp env cc)
-  (k-eval (assignment-value exp) env
+  (e-eval (assignment-value exp) env
           (lambda (val)
             (cc (begin
                   (set-variable-value! (assignment-variable exp) val env)
                   'ok)))))
 
 (define (eval-definition exp env cc)
-  (k-eval (definition-value exp) env
+  (e-eval (definition-value exp) env
           (lambda (val)
             (cc (begin
                   (define-variable! (definition-variable exp) val env)
                   'ok)))))
 
 (define (eval-if exp env cc)
-  (k-eval (if-predicate exp) env
+  (e-eval (if-predicate exp) env
           (lambda (pred)
-            (k-eval (if pred
+            (e-eval (if pred
                         (if-consequent exp)
                         (if-alternative exp))
                     env cc))))
 
 (define (eval-sequence exps env cc)
-  (k-eval (first-exp exps) env
+  (e-eval (first-exp exps) env
           (lambda (val)
             (if (last-exp? exps)
                 (cc val)
@@ -54,14 +57,14 @@
 
 (define (map-eval exps env cc)
   (if (last-exp? exps)
-      (k-eval (first-exp exps) env
+      (e-eval (first-exp exps) env
               (lambda (x) (cc (list x))))
-      (k-eval (first-exp exps) env
+      (e-eval (first-exp exps) env
               (lambda (x)
                 (map-eval (rest-exps exps) env
                           (lambda (y) (cc (cons x y))))))))
 
-(define (k-apply exps env cc)
+(define (e-apply exps env cc)
   (map-eval exps env
             (lambda (exp)
               (apply (operator exp) cc (operands exp)))))
@@ -189,27 +192,18 @@
   (set-car! frame (cons var (car frame)))
   (set-cdr! frame (cons val (cdr frame))))
 
-#|
 (define (extend-environment vars vals base-env)
-  (if (= (length vars) (length vals))
-      (cons (make-frame vars vals) base-env)
-      (if (< (length vars) (length vals))
-          (error "Too many arguments supplied" vars vals)
-          (error "Too few arguments supplied" vars vals))))
-|#
-
-(define (extend-environment vars vals base-env)
-  (cond ((list? vars) ; vars is like (x y)
+  (cond ((list? vars) ; ex. (x y)
          (if (= (length vars) (length vals))
              (cons (make-frame vars vals) base-env)
              (if (< (length vars) (length vals))
                  (error "Too many arguments supplied" vars vals)
                  (error "Too few arguments supplied" vars vals))))
-        ((pair? vars) ; vars is like (x . args)
+        ((pair? vars) ; ex. (x . args)
          (cons (make-frame (list (car vars) (cdr vars))
                            (list (car vals) (cdr vals)))
                base-env))
-        (else ; vars is like args
+        (else ; ex. args
          (cons (make-frame (list vars) (list vals)) base-env))))
 
 (define (lookup-variable-value var env)
@@ -253,7 +247,7 @@
     (scan (frame-variables frame)
           (frame-values frame))))
 
-(define (k-call/cc cc proc)
+(define (e-call/cc cc proc)
   (proc cc (lambda (cont val) (cc val))))
 
 (define (setup-environment)
@@ -261,10 +255,9 @@
          (extend-environment (primitive-procedure-names)
                              (primitive-procedure-objects)
                              the-empty-environment)))
-    (define-variable! 'call/cc k-call/cc initial-env)
-    (define-variable! 'call-with-current-continuation k-call/cc initial-env)
-    (define-variable!
-      'and
+    (define-variable! 'call/cc e-call/cc initial-env)
+    (define-variable! 'call-with-current-continuation e-call/cc initial-env)
+    (define-variable! 'and
       '(macro args
          (if (null? args)
              #t
@@ -297,7 +290,7 @@
         (list 'newline newline)
         (list 'display display)
 ;;      more primitives
-        (list 'exit exit) ; for jscheme
+        (list 'exit exit) ; for gauche & jscheme
         ))
 
 (define (e-sheep)
@@ -308,9 +301,11 @@
   (let loop ((env (setup-environment)))
     (prompt-for-input)
     (let ((input (read)))
-      (k-eval input 
+      (e-eval input 
               env
               (lambda (cc)
                 (announce-output)
                 (display cc))))
     (loop env)))
+
+(e-sheep)
