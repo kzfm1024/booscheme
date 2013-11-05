@@ -1,6 +1,5 @@
 CXX			= g++
 CXXFLAGS	= \
-	-I/usr/local/boost_1_44_0 \
 	-g \
 	-D_ENABLE_BOODEBUG_
 
