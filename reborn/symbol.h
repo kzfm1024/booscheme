@@ -6,17 +6,28 @@
 #ifndef _SYMBOL_H
 #define _SYMBOL_H
 
-class symbol
+#include <string>
+#include <map>
+#include "object.h"
+
+namespace booscheme
 {
-public:
-    symbol(const std::string& n) : name(n) {}
-    ~symbol() {} 
+	class symbol : public object
+	{
+	public:
+		symbol(const std::string& name) : m_name(name) {}
+		virtual ~symbol() {} 
 
-    static Symbol make(const std::string& n); // FIXME: change to get()?
-    std::string name;
+		virtual std::string inspect();
 
-private:
-    static std::map<std::string, Symbol> table;
-};
+	public:
+		static symbol* get(const std::string& name);
+		std::string name() { return m_name; }		
+
+	private:
+		static std::map<std::string, symbol*> m_symtab;
+		std::string m_name;
+	};
+}
 
 #endif // _SYMBOL_H
