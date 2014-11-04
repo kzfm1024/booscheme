@@ -18,11 +18,11 @@ namespace booscheme
 		symbol(const std::string& name) : m_name(name) {}
 		virtual ~symbol() {} 
 
+		virtual std::string to_s() { return m_name; }
 		virtual std::string inspect();
 
 	public:
 		static symbol* get(const std::string& name);
-		std::string name() { return m_name; }		
 
 	private:
 		static std::map<std::string, symbol*> m_symtab;

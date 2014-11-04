@@ -17,7 +17,8 @@ namespace booscheme
 		object() {}
 		virtual ~object() {}
 
-		virtual std::string inspect() { return std::string("#<object>"); }
+		virtual std::string to_s() { return std::string("#<object>"); }
+		virtual std::string inspect() { return this->to_s(); } 
 	};
 }
 
