@@ -10,7 +10,7 @@
 #include <map>
 #include "object.h"
 
-namespace booscheme
+namespace boo
 {
 	class boolean : public object
 	{

@@ -1,12 +1,12 @@
 //
-// util.cpp
+// boo.cpp
 //
 
 #include <assert.h>
-#include "util.h"
-#include "pair.h"
+#include "boo.h"
 
-namespace booscheme
+
+namespace boo
 {
 	boolean* TRUE()
 	{
@@ -25,6 +25,13 @@ namespace booscheme
 	boolean* BOOLEAN(bool x)
 	{
 		return x ? TRUE() : FALSE();
+	}
+
+	null* NIL()
+	{
+		static null* nil;
+		if (!nil) nil = new null();
+		return nil;
 	}
 
 	object* cons(object* a, object* b)
@@ -58,5 +65,17 @@ namespace booscheme
 		pair* p = dynamic_cast<pair*>(x);
 		assert(p);
 		return p->setcdr(b);
+	}
+
+	bool is_null(object* x)
+	{
+		null* nil = dynamic_cast<null*>(x);
+		return nil ? true : false;
+	}
+
+	bool is_pair(object* x)
+	{
+		pair* p = dynamic_cast<pair*>(x);
+		return p ? true : false;
 	}
 }

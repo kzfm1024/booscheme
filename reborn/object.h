@@ -9,7 +9,7 @@
 #include <string>
 #include <gc_cpp.h>
 
-namespace booscheme
+namespace boo
 {
 	class object : public gc
 	{

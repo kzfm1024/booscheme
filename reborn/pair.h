@@ -9,7 +9,7 @@
 #include <string>
 #include "object.h"
 
-namespace booscheme
+namespace boo
 {
 	class pair : public object
 	{

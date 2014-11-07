@@ -5,7 +5,7 @@
 #include <sstream>
 #include "symbol.h"
 
-namespace booscheme
+namespace boo
 {
 	std::string symbol::inspect()
 	{
