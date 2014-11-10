@@ -1,6 +1,16 @@
 #include <iostream>
 #include <boost/any.hpp>
+
 #include "boo.h"
+#include "boolean.h"
+#include "null.h"
+#include "pair.h"
+#include "number.h"
+#include "character.h"
+#include "symbol.h"
+#include "misc.h"
+#include "environment.h"
+#include "procedure.h"
 
 using namespace boo;
 
@@ -41,25 +51,71 @@ void pair_test()
 	symbol* dona = symbol::get("dona");
 
 	object* p = cons(foo, bar);
-	std::cout << p->to_s() << std::endl;
-	std::cout << car(p)->to_s() << std::endl;
-	std::cout << cdr(p)->to_s() << std::endl;
+	print("p = cons(foo, bar)", p);
+	print("car(p)", car(p));
+	print("cdr(p)", cdr(p));
 	setcar(p, hoge);
 	setcdr(p, dona);
-	std::cout << p->to_s() << std::endl;
+	print(p);
 	p = cons(bar, p);
-	std::cout << p->to_s() << std::endl;
+	print(p);
 
 	p = cons(foo, NIL());
-	std::cout << p->to_s() << std::endl;
+	print(p);
 
 	std::cout << is_null(bar) << std::endl;
 	std::cout << is_null(NIL()) << std::endl;
 }
 
+void number_test()
+{
+	number* num = new number(188);
+	print(num);
+}
+
+void character_test()
+{
+	character* ch = new character('y');
+	print(ch);
+}
+
+void environment_test()
+{
+	symbol* x = new symbol("x");
+	symbol* y = new symbol("y");
+	symbol* z = new symbol("z");
+	symbol* xx = new symbol("xx");
+
+	number* i = new number(123);
+	number* j = new number(456);
+	number* k = new number(789);
+
+	pair* vars = cons(x, cons(y, cons(z, NIL())));
+	pair* vals = cons(i, cons(j, cons(k, NIL())));
+
+	environment* env = new environment(vars, vals, 0);
+	print(env->lookup(x));
+	print(env->lookup(y));
+	print(env->lookup(z));
+
+	try
+	{
+		print(env->lookup(xx));	
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
+}
+
 int main()
 {
+#if 0
 	symbol_test();
 	boolean_test();
 	pair_test();
+	number_test();
+	character_test();
+#endif
+	environment_test();
 }
