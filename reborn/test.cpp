@@ -10,7 +10,7 @@
 #include "symbol.h"
 #include "misc.h"
 #include "environment.h"
-#include "procedure.h"
+#include "primitive.h"
 
 using namespace boo;
 
@@ -108,6 +108,28 @@ void environment_test()
 	}
 }
 
+void eval_test()
+{
+	symbol* plus = new symbol("+");
+	primitive* plus_proc = new primitive(0, 2, 2);
+
+	symbol* x = new symbol("x");
+	symbol* y = new symbol("y");
+	symbol* z = new symbol("z");
+
+	number* i = new number(123);
+	number* j = new number(456);
+	number* k = new number(789);
+
+	pair* vars = cons(plus, cons(x, cons(y, cons(z, NIL()))));
+	pair* vals = cons(plus_proc, cons(i, cons(j, cons(k, NIL()))));
+
+	environment* env = new environment(vars, vals, 0);
+
+	pair* exp = cons(plus, (cons(x, (cons(y, NIL())))));
+	print(eval(exp, env));
+}
+
 int main()
 {
 #if 0
@@ -118,4 +140,5 @@ int main()
 	character_test();
 #endif
 	environment_test();
+	eval_test();
 }
