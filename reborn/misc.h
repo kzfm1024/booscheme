@@ -6,7 +6,6 @@
 #ifndef _MISC_H
 #define _MISC_H
 
-#include <string>
 #include "object.h"
 
 namespace boo

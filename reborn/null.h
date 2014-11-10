@@ -6,7 +6,6 @@
 #ifndef _NULL_H
 #define _NULL_H
 
-#include <string>
 #include "object.h"
 
 namespace boo

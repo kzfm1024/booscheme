@@ -6,7 +6,6 @@
 #ifndef _EOF_H
 #define _EOF_H
 
-#include <string>
 #include "object.h"
 
 namespace boo
