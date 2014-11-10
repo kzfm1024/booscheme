@@ -2,110 +2,111 @@
 // environment.cpp
 //
 
-#include "booscheme.h"
+#include <assert.h>
+#include "environment.h"
+#include "symbol.h"
+#include "procedure.h"
+#include "misc.h"
+#include "boo.h"
 
-environment::environment()
-    : m_parent(0), m_map()
+namespace boo
 {
-}
+	environment::environment()
+		: m_parent(0), m_map()
+	{
+	}
 
-environment::environment(pair* vars, pair* vals, environment* parent)
-    : m_parent(parent), m_map()
-{
-}
+	environment::environment(object* vars, object* vals, environment* parent)
+		: m_parent(parent), m_map()
+	{
+		while (!is_null(vars))
+		{
+			symbol* var = dynamic_cast<symbol*>(car(vars));
+			object* val = car(vals);
+			
+			assert(var);
+			m_map[var] = val;
+		
+			vars = cdr(vars);
+			vals = cdr(vals);
+		}
+	}
 
-boost::any environment::lookup(Symbol s)
-{
-    boost::any varList = vars;
-    boost::any valList = vals;
+	object* environment::lookup(symbol* sym)
+	{
+		std::map<symbol*, object*>::iterator iter = m_map.find(sym);
+		if (iter != m_map.end())
+		{
+			return (*iter).second;
+		}
+		else if (m_parent)
+		{
+			return m_parent->lookup(sym);
+		}
+		else
+		{
+			return error("unbound variable: " + stringify(sym));
+		}
+	}	
 
-    while (!isEMPTY(varList))
-    {
-        if (sym(first(varList)) == s)
-        {
-            return first(valList);
-        }
-/*
-        else if (isSymbol(varList) && sym(varList) == s) // あり得る？
-        {
-            return valList;
-        }
-*/
-        else
-        {
-            varList = rest(varList);
-            valList = rest(valList);
-        }
-    }
+	object* environment::define(object* var, object* val)
+	{
+		symbol* sym = dynamic_cast<symbol*>(var);
+		if (!sym)
+		{
+			return error("attempt to set a non-symbol: " + stringify(var));
+		}
 
-    if (parent) return parent->lookup(s);
-    else return error("unbound variable: " + s->name);
-}
+		if (is_procedure(val, "anonymous procedure"))
+		{
+			procedure* proc = dynamic_cast<procedure*>(val);
+			proc->set_name(sym->to_s());
+		}
 
-boost::any environment::define(boost::any var, boost::any val)
-{
-    vars = cons(var, vars);
-    vals = cons(val, vals);
+		m_map[sym] = val;
+		return sym;
+	}
 
-/*
-    if (isProcedure(val, "anonymous procedure"))
-    {
-        proc(val)->name = sym(var)->name;
-    }
-*/
+	object* environment::set(object* var, object* val)
+	{
+		symbol* sym = dynamic_cast<symbol*>(var);
+		if (!sym)
+		{
+			return error("attempt to set a non-symbol: " + stringify(var));
+		}
+		
+		std::map<symbol*, object*>::iterator iter = m_map.find(sym);
+		if (iter != m_map.end())
+		{
+			m_map[sym] = val;
+		}
+		else
+		{
+			return error("unbound variable: " + stringify(sym));
+		}
+	}
 
-    return var;
-}
 
-boost::any environment::set(boost::any var, boost::any val)
-{
-    if (!isSymbol(var))
-    {
-        return error("attempt to set a non-symbol: " + stringify(var));
-    }
+#if 0
+	Environment environment::defPrim(const std::string& n, int id, int minArgs)
+	{
+		define(symbol::make(n), Primitive(new primitive(id, minArgs, minArgs)));
+		return Environment(this);
+	}
 
-    Symbol s = sym(var);
-    boost::any varList = vars;
-    boost::any valList = vals;
+	Environment environment::defPrim(const std::string& n,
+									 int id, int minArgs, int maxArgs)
+	{
+		define(symbol::make(n), Primitive(new primitive(id, minArgs, maxArgs)));
+		return Environment(this);
+	}
 
-    while (!isEMPTY(varList))
-    {
-        if (sym(first(varList)) == s)
-        {
-            return setFirst(valList, val);
-        }
-        else if (sym(rest(varList)) == s)
-        {
-            return setRest(valList, val);
-        }
-        else
-        {
-            varList = rest(varList);
-            valList = rest(valList);
-        }
-    }
-
-    if (parent) return parent->set(s, val);
-    else return error("unbound variable: " + s->name);
-}
-
-Environment environment::defPrim(const std::string& n, int id, int minArgs)
-{
-    define(symbol::make(n), Primitive(new primitive(id, minArgs, minArgs)));
-    return Environment(this);
-}
-
-Environment environment::defPrim(const std::string& n,
-                                 int id, int minArgs, int maxArgs)
-{
-    define(symbol::make(n), Primitive(new primitive(id, minArgs, maxArgs)));
-    return Environment(this);
-}
-
-bool environment::numberArgsOK(boost::any vars, boost::any vals)
-{
-    return ((isEMPTY(vars) && isEMPTY(vals)) ||
-            isSymbol(vars) ||
-            (isPair(vars) && isPair(vals) &&
-             numberArgsOK(rest(vars), rest(vals))));
+	bool environment::numberArgsOK(boost::any vars, boost::any vals)
+	{
+		return ((isEMPTY(vars) && isEMPTY(vals)) ||
+				isSymbol(vars) ||
+				(isPair(vars) && isPair(vals) &&
+				 numberArgsOK(rest(vars), rest(vals))));
+	}
+#endif
 }

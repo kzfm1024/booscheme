@@ -6,28 +6,34 @@
 #ifndef _ENVIRONMENT_H
 #define _ENVIRONMENT_H
 
-#include <boost/any.hpp>
+#include <map>
+#include "object.h"
+#include "pair.h"
+#include "symbol.h"
 
-namespace booscheme
+namespace boo
 {
-	class environment
+	class environment : public object
 	{
 	public:
 		environment();
-		environment(boost::any vars, boost::any vals, environment parent);
-		~environment() {}
+		environment(object* vars, object* vals, environment* parent);
+		virtual ~environment() {}
 
-		boost::any lookup(Symbol sym);
-		boost::any define(boost::any var, boost::any val);
-		boost::any set(boost::any var, boost::any val);
+		virtual std::string to_s() { return std::string("#<environment>"); }
+		
+		object* lookup(symbol* sym);
+		object* define(object* var, object* val);
+		object* set(object* var, object* val);
+/*
 		environment defPrim(const std::string& n, int id, int minArgs);
 		environment defPrim(const std::string& n, int id, int minArgs, int maxArgs);
-		bool numberArgsOK(boost::any vars, boost::any vals);
+		bool numberArgsOK(pair* vars, pair* vals);
+*/
 
 	private:
-		boost::any vars;
-		boost::any vals;
-		environment parent;
+		environment* m_parent;
+		std::map<symbol*, object*> m_map;
 	};
 }
 
