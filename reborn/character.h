@@ -7,7 +7,6 @@
 #define _CHARACTER_H
 
 #include <stdint.h>
-#include <string>
 #include "object.h"
 
 namespace boo

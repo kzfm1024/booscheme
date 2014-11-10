@@ -6,7 +6,6 @@
 #ifndef _BOOLEAN_H
 #define _BOOLEAN_H
 
-#include <string>
 #include <map>
 #include "object.h"
 
