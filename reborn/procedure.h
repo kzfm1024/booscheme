@@ -18,9 +18,6 @@ namespace boo
 		virtual ~procedure() {} 
 		
 		virtual std::string to_s() { return m_name; }
-
-	public:
-		virtual object* apply(object* args) { return UNDEF(); } 
 		void set_name(const std::string& name) { m_name = name; }
 
 	protected:
