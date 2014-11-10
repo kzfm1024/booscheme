@@ -6,7 +6,6 @@
 #ifndef _PAIR_H
 #define _PAIR_H
 
-#include <string>
 #include "object.h"
 
 namespace boo
