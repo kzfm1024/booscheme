@@ -15,6 +15,7 @@ namespace boo
 	class null;
 	class misc;
 	class pair;
+	class environment;
 
     boolean* TRUE();
     boolean* FALSE();
@@ -30,6 +31,11 @@ namespace boo
 	object* setcar(object* x, object* a);
 	object* setcdr(object* x, object* b);
 
+	object* first(object* x);
+	object* second(object* x);
+	object* third(object* x);
+
+	bool truth(object* x);
     bool is_null(object* x);
     bool is_pair(object* x);
     bool is_number(object* x);
@@ -44,6 +50,9 @@ namespace boo
 
 	void print(object* x);
 	void print(const std::string& msg, object* x);
+
+	object* eval(object* x, environment* env);
+	object* evlist(object* lst, environment* env);
 }
 
 #endif // _BOO_H
