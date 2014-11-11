@@ -17,6 +17,7 @@
 #include "misc.h"
 #include "environment.h"
 #include "procedure.h"
+#include "closure.h"
 #include "primitive.h"
 
 namespace boo
@@ -160,6 +161,12 @@ namespace boo
 	{
 		procedure* proc = dynamic_cast<procedure*>(x);
 		return (proc && proc->to_s() == s) ? true : false;
+	}
+
+	bool is_closure(object* x)
+	{
+		closure* c = dynamic_cast<closure*>(x);
+		return c ? true : false;
 	}
 
 	static void stringify_pair(pair* p, bool quoted, std::ostringstream& buf);
@@ -318,21 +325,16 @@ namespace boo
 				else
 				{
 					fn = eval(fn, env);
-#if 0
-					if (isMacro(fn))
+					if (is_closure(fn))
 					{
-						// FIXME
-					}
-					else if (isClosure(fn))
-					{
-						Closure f = boost::any_cast<Closure>(fn);
-						x = f->body;
-						env = Environment(new environment(f->parms,
-														  evalList(args, env),
-														  f->env));
+						closure* f = dynamic_cast<closure*>(fn);
+						x = f->body();
+						env = new environment(f->params(),
+											  evlist(args, env),
+											  f->env());
 					}
 					else
-#endif
+
 					{
 						primitive* p = dynamic_cast<primitive*>(fn);
 						return p->apply(evlist(args, env));

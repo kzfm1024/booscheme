@@ -11,6 +11,7 @@
 #include "misc.h"
 #include "environment.h"
 #include "primitive.h"
+#include "closure.h"
 
 using namespace boo;
 
@@ -127,6 +128,13 @@ void eval_test()
 	environment* env = new environment(vars, vals, 0);
 
 	pair* exp = cons(plus, (cons(x, (cons(y, NIL())))));
+	print(eval(exp, env));
+
+	pair* params = cons(x, NIL());
+	pair* body = cons(plus, cons(x, cons(x, NIL())));
+	closure* f = new closure(params, body, env);
+
+	exp = cons(f, cons(new number(5), NIL()));
 	print(eval(exp, env));
 }
 
