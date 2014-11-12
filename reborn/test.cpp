@@ -6,6 +6,7 @@
 #include "null.h"
 #include "pair.h"
 #include "number.h"
+#include "string_t.h"
 #include "character.h"
 #include "symbol.h"
 #include "misc.h"
@@ -72,6 +73,12 @@ void number_test()
 {
 	number* num = new number(188);
 	print(num);
+}
+
+void string_test()
+{
+	string_t* str = new string_t("foo");
+	print(str);
 }
 
 void character_test()
@@ -145,8 +152,10 @@ int main()
 	boolean_test();
 	pair_test();
 	number_test();
-	character_test();
 #endif
+
+	string_test();
+	character_test();
 	environment_test();
 	eval_test();
 }

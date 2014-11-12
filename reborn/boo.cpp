@@ -12,6 +12,7 @@
 #include "null.h"
 #include "pair.h"
 #include "number.h"
+#include "string_t.h"
 #include "character.h"
 #include "symbol.h"
 #include "misc.h"
@@ -139,6 +140,12 @@ namespace boo
 		return num ? true : false;
 	}
 
+	bool is_string(object* x)
+	{
+		string_t* str = dynamic_cast<string_t*>(x);
+		return str ? true : false;
+	}
+
 	bool is_character(object* x)
 	{
 		character* ch = dynamic_cast<character*>(x);
@@ -176,6 +183,12 @@ namespace boo
 		if (is_pair(x))
 		{
 			stringify_pair(dynamic_cast<pair*>(x), quoted, buf);
+		}
+		else if (is_string(x)) 
+		{
+			if (quoted) buf << "\"";
+			buf << x->to_s();
+			if (quoted) buf << "\"";
 		}
 		else if (is_character(x))
 		{

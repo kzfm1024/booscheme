@@ -39,8 +39,8 @@ namespace boo
     bool is_null(object* x);
     bool is_pair(object* x);
     bool is_number(object* x);
+    bool is_string(object* x);
     bool is_character(object* x);
-    bool is_number(object* x);
 	bool is_symbol(object* x);
 	bool is_symbol(object* x, const std::string& s);
 	bool is_procedure(object* x, const std::string& s);
