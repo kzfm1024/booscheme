@@ -20,6 +20,7 @@
 #include "procedure.h"
 #include "closure.h"
 #include "primitive.h"
+#include "output_port.h"
 
 namespace boo
 {
@@ -251,6 +252,12 @@ namespace boo
 	std::string stringify(object* x)
 	{
 		return stringify(x, true);
+	}
+
+	object* write(object* x, output_port* port, bool quoted)
+	{
+		port->write(stringify(x, quoted));
+		return x;
 	}
 
 	void print(object* x)

@@ -16,6 +16,7 @@ namespace boo
 	class misc;
 	class pair;
 	class environment;
+	class output_port;
 
     boolean* TRUE();
     boolean* FALSE();
@@ -48,6 +49,7 @@ namespace boo
 	std::string stringify(object* x, bool quoted);
 	std::string stringify(object* x);
 
+	object* write(object* x, output_port* port, bool quoted);
 	void print(object* x);
 	void print(const std::string& msg, object* x);
 

@@ -13,6 +13,7 @@
 #include "environment.h"
 #include "primitive.h"
 #include "closure.h"
+#include "output_port.h"
 
 using namespace boo;
 
@@ -77,14 +78,20 @@ void number_test()
 
 void string_test()
 {
+	output_port* out = new output_port(std::cout);
 	string_t* str = new string_t("foo");
-	print(str);
+	write(str, out, true); out->newline();
+	write(str, out, false); out->newline();
+	out->flush();
 }
 
 void character_test()
 {
+	output_port* out = new output_port(std::cout);
 	character* ch = new character('y');
-	print(ch);
+	write(ch, out, true); out->newline();
+	write(ch, out, false); out->newline();
+	out->flush();
 }
 
 void environment_test()
