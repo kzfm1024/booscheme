@@ -5,6 +5,9 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include <stdlib.h> // FIXME: strtol 
+#include <errno.h> // FIXME
+#include <limits.h> // FIXME
 #include <assert.h>
 #include "boo.h"
 
@@ -21,6 +24,7 @@
 #include "closure.h"
 #include "primitive.h"
 #include "output_port.h"
+#include "eof.h"
 
 namespace boo
 {
@@ -50,11 +54,18 @@ namespace boo
 		return nil;
 	}
 
-	object* UNDEF()
+	eof* EOF()
+	{
+		static eof* e;
+		if (!e) e = new eof();
+		return e;
+	}
+
+	misc* UNDEF()
 	{
 		static misc* undef;
 		if (!undef) undef = new misc("#<undef>");
-		return dynamic_cast<object*>(undef);
+		return undef;
 	}
 
 	misc* error(const std::string& message)
@@ -175,6 +186,33 @@ namespace boo
 	{
 		closure* c = dynamic_cast<closure*>(x);
 		return c ? true : false;
+	}
+
+	bool is_eof(object* x)
+	{
+		eof* e = dynamic_cast<eof*>(x);
+		return e ? true : false;
+	}
+
+	number* to_number(const std::string& s)
+	{
+		long int val;
+		char* endptr;
+		int base = 10;
+            
+		val = strtol(s.c_str(), &endptr, base);
+
+		if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN)))
+		{
+			throw std::invalid_argument("out of ranage");
+		}
+            
+		if (*endptr)
+		{
+			throw std::invalid_argument("not a number");
+		}
+
+		return new number(val);
 	}
 
 	static void stringify_pair(pair* p, bool quoted, std::ostringstream& buf);

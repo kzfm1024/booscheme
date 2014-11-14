@@ -16,13 +16,17 @@ namespace boo
 	class misc;
 	class pair;
 	class environment;
+	class input_port;
 	class output_port;
+	class eof;
+	class number;
 
     boolean* TRUE();
     boolean* FALSE();
     boolean* BOOLEAN(bool x);
     null* NIL();
-	object* UNDEF();
+    eof* EOF();
+	misc* UNDEF();
 	misc* error(const std::string& message);
 	misc* warn(const std::string& message);
 
@@ -45,6 +49,9 @@ namespace boo
 	bool is_symbol(object* x);
 	bool is_symbol(object* x, const std::string& s);
 	bool is_procedure(object* x, const std::string& s);
+	bool is_closure(object* x);
+	bool is_eof(object* x);
+	number* to_number(const std::string& s);
 
 	std::string stringify(object* x, bool quoted);
 	std::string stringify(object* x);

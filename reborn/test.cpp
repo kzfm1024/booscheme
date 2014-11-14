@@ -83,6 +83,7 @@ void string_test()
 	write(str, out, true); out->newline();
 	write(str, out, false); out->newline();
 	out->flush();
+	print(out);
 }
 
 void character_test()
@@ -92,6 +93,7 @@ void character_test()
 	write(ch, out, true); out->newline();
 	write(ch, out, false); out->newline();
 	out->flush();
+	print(out);
 }
 
 void environment_test()

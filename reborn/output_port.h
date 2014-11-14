@@ -11,11 +11,13 @@
 
 namespace boo
 {
-	class output_port
+	class output_port : public object
 	{
 	public:
 		output_port(std::ostream& out) : m_out(out) {}
 		virtual ~output_port() {}
+
+		virtual std::string to_s() { return std::string("#<output_port>"); }
     
 		void write(const std::string& s);
 		void newline();

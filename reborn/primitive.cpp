@@ -19,8 +19,6 @@ namespace boo
 
 	object* primitive::apply(object* args)
 	{
-		// return UNDEF();
-
 		number* n1 = dynamic_cast<number*>(first(args));
 		number* n2 = dynamic_cast<number*>(second(args));
 		return new number(n1->to_i() + n2->to_i());
