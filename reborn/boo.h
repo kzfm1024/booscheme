@@ -40,6 +40,8 @@ namespace boo
 	object* second(object* x);
 	object* third(object* x);
 
+	pair* list(object* a, object* b);
+
 	bool truth(object* x);
     bool is_null(object* x);
     bool is_pair(object* x);

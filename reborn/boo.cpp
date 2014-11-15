@@ -128,6 +128,11 @@ namespace boo
 		return car(cdr(cdr(x)));
 	}
 
+	pair* list(object* a, object* b)
+	{
+		return cons(a, cons(b, NIL()));
+	}
+
 	bool truth(object* x)
 	{
 		boolean* b = dynamic_cast<boolean*>(x);
@@ -317,12 +322,12 @@ namespace boo
 		//
 		while (true)
 		{
-			if (is_symbol(x))        // VARIABLE
+			if (is_symbol(x))	// VARIABLE
 			{
 				symbol* sym = dynamic_cast<symbol*>(x);
 				return env->lookup(sym);
 			}
-			else if (!is_pair(x))    // CONSTANT
+			else if (!is_pair(x)) // CONSTANT
 			{
 				return x;
 			}
@@ -370,10 +375,12 @@ namespace boo
 				{
 					x = reduceCond(args, env);
 				}
+#endif
 				else if (is_symbol(fn, "lambda")) // LAMBDA
 				{
-					return Closure(new closure(car(args), cdr(args), env));
+					return new closure(car(args), cdr(args), env);
 				}
+#if 0
 				else if (is_symbol(fn, "macro"))
 				{
 					// FIXME
@@ -392,7 +399,6 @@ namespace boo
 											  f->env());
 					}
 					else
-
 					{
 						primitive* p = dynamic_cast<primitive*>(fn);
 						return p->apply(evlist(args, env));
