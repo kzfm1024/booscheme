@@ -13,5 +13,7 @@
 #include "eof.h"
 #include "character.h"
 #include "number.h"
+#include "pair.h"
+#include "null.h"
 
 #endif // _BOO_TYPES_H
