@@ -28,8 +28,8 @@ namespace boo
 		int push_char(int ch);
 		int pop_char();
 		object* next_token();
-		// object* readTail();
-		// object* nextToken();
+		object* read_tail();
+
 
 		bool          m_is_pushed_token;;
 		bool          m_is_pushed_char;
