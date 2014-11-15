@@ -14,6 +14,7 @@
 #include "primitive.h"
 #include "closure.h"
 #include "output_port.h"
+#include "input_port.h"
 
 using namespace boo;
 
@@ -98,10 +99,10 @@ void character_test()
 
 void environment_test()
 {
-	symbol* x = new symbol("x");
-	symbol* y = new symbol("y");
-	symbol* z = new symbol("z");
-	symbol* xx = new symbol("xx");
+	symbol* x = symbol::get("x");
+	symbol* y = symbol::get("y");
+	symbol* z = symbol::get("z");
+	symbol* xx = symbol::get("xx");
 
 	number* i = new number(123);
 	number* j = new number(456);
@@ -127,12 +128,12 @@ void environment_test()
 
 void eval_test()
 {
-	symbol* plus = new symbol("+");
+	symbol* plus = symbol::get("+");
 	primitive* plus_proc = new primitive(0, 2, 2);
 
-	symbol* x = new symbol("x");
-	symbol* y = new symbol("y");
-	symbol* z = new symbol("z");
+	symbol* x = symbol::get("x");
+	symbol* y = symbol::get("y");
+	symbol* z = symbol::get("z");
 
 	number* i = new number(123);
 	number* j = new number(456);
@@ -154,6 +155,31 @@ void eval_test()
 	print(eval(exp, env));
 }
 
+void scm_test()
+{
+	symbol* plus = symbol::get("+");
+	primitive* plus_proc = new primitive(0, 2, 2);
+
+	symbol* x = symbol::get("x");
+	symbol* y = symbol::get("y");
+	symbol* z = symbol::get("z");
+
+	number* i = new number(123);
+	number* j = new number(456);
+	number* k = new number(789);
+
+	pair* vars = cons(plus, cons(x, cons(y, cons(z, NIL()))));
+	pair* vals = cons(plus_proc, cons(i, cons(j, cons(k, NIL()))));
+
+	environment* env = new environment(vars, vals, 0);
+
+	input_port* in = new input_port(std::cin);
+	output_port* out = new output_port(std::cout);
+	std::cout << "boo> " << std::flush;
+	write(eval(in->read(), env), out, true);
+	std::cout << std::endl;
+}
+
 int main()
 {
 #if 0
@@ -161,10 +187,12 @@ int main()
 	boolean_test();
 	pair_test();
 	number_test();
-#endif
 
 	string_test();
 	character_test();
 	environment_test();
 	eval_test();
+#endif
+
+	scm_test();
 }

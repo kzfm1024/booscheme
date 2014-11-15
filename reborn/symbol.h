@@ -11,22 +11,24 @@
 
 namespace boo
 {
-	class symbol : public object
-	{
-	public:
-		symbol(const std::string& name) : m_name(name) {}
-		virtual ~symbol() {} 
+    class symbol : public object
+    {
+    private:
+        symbol(const std::string& name) : m_name(name) {}
+        symbol(const symbol& sym) : m_name(sym.m_name) {}
+        virtual ~symbol() {} 
+        symbol& operator=(const symbol& sym) { m_name = sym.m_name; }
 
-		virtual std::string to_s() { return m_name; }
-		virtual std::string inspect();
+    public:
+        virtual std::string to_s() { return m_name; }
+        virtual std::string inspect();
 
-	public:
-		static symbol* get(const std::string& name);
+        static symbol* get(const std::string& name);
 
-	private:
-		static std::map<std::string, symbol*> m_symtab;
-		std::string m_name;
-	};
+    private:
+        static std::map<std::string, symbol*> m_symtab;
+        std::string m_name;
+    };
 }
 
 #endif // _SYMBOL_H
