@@ -25,11 +25,10 @@ namespace boo
 		object* lookup(symbol* sym);
 		object* define(object* var, object* val);
 		object* set(object* var, object* val);
-/*
-		environment defPrim(const std::string& n, int id, int minArgs);
-		environment defPrim(const std::string& n, int id, int minArgs, int maxArgs);
+#if 0
 		bool numberArgsOK(pair* vars, pair* vals);
-*/
+#endif
+
 
 	private:
 		environment* m_parent;

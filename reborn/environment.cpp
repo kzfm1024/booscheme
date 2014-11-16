@@ -9,6 +9,8 @@
 #include "misc.h"
 #include "boo.h"
 
+#include <iostream>
+
 namespace boo
 {
 	environment::environment()
@@ -56,7 +58,7 @@ namespace boo
 		{
 			return error("attempt to set a non-symbol: " + stringify(var));
 		}
-
+		
 		if (is_procedure(val, "anonymous procedure"))
 		{
 			procedure* proc = dynamic_cast<procedure*>(val);
@@ -88,19 +90,6 @@ namespace boo
 
 
 #if 0
-	Environment environment::defPrim(const std::string& n, int id, int minArgs)
-	{
-		define(symbol::make(n), Primitive(new primitive(id, minArgs, minArgs)));
-		return Environment(this);
-	}
-
-	Environment environment::defPrim(const std::string& n,
-									 int id, int minArgs, int maxArgs)
-	{
-		define(symbol::make(n), Primitive(new primitive(id, minArgs, maxArgs)));
-		return Environment(this);
-	}
-
 	bool environment::numberArgsOK(boost::any vars, boost::any vals)
 	{
 		return ((isEMPTY(vars) && isEMPTY(vals)) ||
