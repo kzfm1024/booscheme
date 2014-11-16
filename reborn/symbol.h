@@ -22,7 +22,7 @@ namespace boo
     public:
         virtual std::string to_s() { return m_name; }
         virtual std::string inspect();
-
+		std::string name() { return m_name; }
         static symbol* get(const std::string& name);
 
     private:
