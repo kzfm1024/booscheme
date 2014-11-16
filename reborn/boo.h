@@ -65,8 +65,9 @@ namespace boo
 	std::string stringify(object* x);
 
 	object* write(object* x, output_port* port, bool quoted);
-	void print(object* x);
-	void print(const std::string& msg, object* x);
+
+	void pdebug(object* x);
+	void pdebug(const std::string& msg, object* x);
 
 	object* eval(object* x, environment* env);
 	object* evlist(object* lst, environment* env);

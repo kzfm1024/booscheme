@@ -321,12 +321,12 @@ namespace boo
 		return x;
 	}
 
-	void print(object* x)
+	void pdebug(object* x)
 	{
 		std::cout << stringify(x) << std::endl << std::flush;
 	}
 
-	void print(const std::string& msg, object* x)
+	void pdebug(const std::string& msg, object* x)
 	{
 		std::cout << msg << ": " << stringify(x) << std::endl << std::flush;
 	}
@@ -396,7 +396,7 @@ namespace boo
 #endif
 				else if (is_symbol(fn, "lambda")) // LAMBDA
 				{
-					return new closure(car(args), cdr(args), env);
+					return new closure(first(args), second(args), env);
 				}
 #if 0
 				else if (is_symbol(fn, "macro"))
@@ -412,12 +412,14 @@ namespace boo
 					{
 						closure* f = dynamic_cast<closure*>(fn);
 						x = f->body();
+						pdebug(x);
 						env = new environment(f->params(),
 											  evlist(args, env),
 											  f->env());
 					}
 					else
 					{
+						pdebug(fn);
 						primitive* p = dynamic_cast<primitive*>(fn);
 						return p->apply(evlist(args, env));
 					}
