@@ -17,9 +17,7 @@ namespace boo
 	std::string closure::to_s()
 	{
 		std::ostringstream stream;
-		stream << "#<closure ";
-		stream << m_name;
-		stream << ">";
+		stream << "#<closure " << m_name << ">";
 		return stream.str();
 	}
 }
