@@ -30,7 +30,12 @@ namespace boo
 	misc* error(const std::string& message);
 	misc* warn(const std::string& message);
 
+#if 0
 	pair* cons(object* a, object* b);
+#else
+	object* cons(object* a, object* b);
+#endif
+	object* cons(object* a, object* b);
     object* car(object* x);
 	object* cdr(object* x);
 	object* setcar(object* x, object* a);
@@ -40,7 +45,8 @@ namespace boo
 	object* second(object* x);
 	object* third(object* x);
 
-	pair* list(object* a, object* b);
+	object* list(object* a, object* b);
+	int length(object* x);
 
 	bool truth(object* x);
     bool is_null(object* x);

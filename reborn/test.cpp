@@ -1,7 +1,11 @@
 #include <iostream>
-#include <boost/any.hpp>
+#include <boost/any.hpp> // TO BE DELETED
 
 #include "boo.h"
+#include "boo_types.h"
+#include "base_library.h"
+
+/*
 #include "boolean.h"
 #include "null.h"
 #include "pair.h"
@@ -15,6 +19,7 @@
 #include "closure.h"
 #include "output_port.h"
 #include "input_port.h"
+*/
 
 using namespace boo;
 
@@ -108,8 +113,8 @@ void environment_test()
 	number* j = new number(456);
 	number* k = new number(789);
 
-	pair* vars = cons(x, cons(y, cons(z, NIL())));
-	pair* vals = cons(i, cons(j, cons(k, NIL())));
+	object* vars = cons(x, cons(y, cons(z, NIL())));
+	object* vals = cons(i, cons(j, cons(k, NIL())));
 
 	environment* env = new environment(vars, vals, 0);
 	print(env->lookup(x));
@@ -139,16 +144,16 @@ void eval_test()
 	number* j = new number(456);
 	number* k = new number(789);
 
-	pair* vars = cons(plus, cons(x, cons(y, cons(z, NIL()))));
-	pair* vals = cons(plus_proc, cons(i, cons(j, cons(k, NIL()))));
+	object* vars = cons(plus, cons(x, cons(y, cons(z, NIL()))));
+	object* vals = cons(plus_proc, cons(i, cons(j, cons(k, NIL()))));
 
 	environment* env = new environment(vars, vals, 0);
 
-	pair* exp = cons(plus, (cons(x, (cons(y, NIL())))));
+	object* exp = cons(plus, (cons(x, (cons(y, NIL())))));
 	print(eval(exp, env));
 
-	pair* params = cons(x, NIL());
-	pair* body = cons(plus, cons(x, cons(x, NIL())));
+	object* params = cons(x, NIL());
+	object* body = cons(plus, cons(x, cons(x, NIL())));
 	closure* f = new closure(params, body, env);
 
 	exp = cons(f, cons(new number(5), NIL()));
@@ -168,8 +173,8 @@ void scm_test()
 	number* j = new number(456);
 	number* k = new number(789);
 
-	pair* vars = cons(plus, cons(x, cons(y, cons(z, NIL()))));
-	pair* vals = cons(plus_proc, cons(i, cons(j, cons(k, NIL()))));
+	object* vars = cons(plus, cons(x, cons(y, cons(z, NIL()))));
+	object* vals = cons(plus_proc, cons(i, cons(j, cons(k, NIL()))));
 
 	environment* env = new environment(vars, vals, 0);
 
@@ -179,6 +184,24 @@ void scm_test()
 	write(eval(in->read(), env), out, true);
 	std::cout << std::endl;
 }
+
+void scm_test2()
+{
+	environment* env = new environment(NIL(), NIL(), 0);
+	base_library::install(env);
+
+	input_port* in = new input_port(std::cin);
+	output_port* out = new output_port(std::cout);
+
+	while (true) 
+	{
+		std::cout << "boo> " << std::flush;
+		write(eval(in->read(), env), out, true);
+		std::cout << std::endl;
+	}
+}
+
+
 
 int main()
 {
@@ -194,5 +217,6 @@ int main()
 	eval_test();
 #endif
 
-	scm_test();
+	// scm_test();
+	scm_test2();
 }

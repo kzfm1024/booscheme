@@ -80,10 +80,17 @@ namespace boo
 		return new misc("#<warn>");
 	}
 
+#if 0
 	pair* cons(object* a, object* b)
 	{
 		return new pair(a, b);
 	}
+#else
+	object* cons(object* a, object* b)
+	{
+		return new pair(a, b);
+	}
+#endif
 
 	object* car(object* x)
 	{
@@ -128,9 +135,20 @@ namespace boo
 		return car(cdr(cdr(x)));
 	}
 
-	pair* list(object* a, object* b)
+	object* list(object* a, object* b)
 	{
 		return cons(a, cons(b, NIL()));
+	}
+
+	int length(object* x)
+	{
+		int len = 0;
+		while (is_pair(x))
+		{
+			len++;
+			x = cdr(x);
+		}
+		return len;
 	}
 
 	bool truth(object* x)
@@ -178,13 +196,13 @@ namespace boo
 	bool is_symbol(object* x, const std::string& s)
 	{
 		symbol* sym = dynamic_cast<symbol*>(x);
-		return (sym && sym->to_s() == s) ? true : false;
+		return (sym && sym->name() == s) ? true : false;
 	}
 
 	bool is_procedure(object* x, const std::string& s)
 	{
 		procedure* proc = dynamic_cast<procedure*>(x);
-		return (proc && proc->to_s() == s) ? true : false;
+		return (proc && proc->name() == s) ? true : false;
 	}
 
 	bool is_closure(object* x)

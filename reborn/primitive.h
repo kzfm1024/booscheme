@@ -10,16 +10,20 @@
 
 namespace boo
 {
+	typedef object* (*primitive_func)(object*);
+	
 	class primitive : public procedure
 	{
 	public:
-		primitive(int id, int min_args, int max_args);
+		primitive(primitive_func func, int num_args);
+		primitive(primitive_func func, int min_args, int max_args);
 		virtual ~primitive() {} 
-
+		
+		virtual std::string to_s();
 		virtual object* apply(object* args);
 
 	private:
-		int m_id;
+		primitive_func m_func;
 		int m_min_args;
 		int m_max_args;
 	};
