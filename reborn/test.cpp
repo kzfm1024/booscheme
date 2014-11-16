@@ -1,5 +1,6 @@
 #include <iostream>
 #include <boost/any.hpp> // TO BE DELETED
+#include <limits.h>
 
 #include "boo.h"
 #include "boo_types.h"
@@ -185,7 +186,22 @@ void scm_test2()
 	}
 }
 
+void eval_cc_test()
+{
+	environment* env = new environment(NIL(), NIL(), 0);
+	// base_library::install(env);
 
+	input_port* in = new input_port(std::cin);
+	output_port* out = new output_port(std::cout);
+	primitive_cc_write* cc = new primitive_cc_write(out, true);
+
+	while (true) 
+	{
+		std::cout << "boo> " << std::flush;
+		eval_cc(in->read(), env, cc);
+		std::cout << std::endl;
+	}
+}
 
 int main()
 {
@@ -199,8 +215,9 @@ int main()
 	character_test();
 	environment_test();
 	eval_test();
+	scm_test();
 #endif
 
-	// scm_test();
-	scm_test2();
+	// scm_test2();
+	eval_cc_test();
 }
