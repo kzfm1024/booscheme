@@ -5,22 +5,6 @@
 #include "boo_types.h"
 #include "base_library.h"
 
-/*
-#include "boolean.h"
-#include "null.h"
-#include "pair.h"
-#include "number.h"
-#include "string_t.h"
-#include "character.h"
-#include "symbol.h"
-#include "misc.h"
-#include "environment.h"
-#include "primitive.h"
-#include "closure.h"
-#include "output_port.h"
-#include "input_port.h"
-*/
-
 using namespace boo;
 
 void symbol_test()
@@ -60,17 +44,17 @@ void pair_test()
 	symbol* dona = symbol::get("dona");
 
 	object* p = cons(foo, bar);
-	print("p = cons(foo, bar)", p);
-	print("car(p)", car(p));
-	print("cdr(p)", cdr(p));
+	pdebug("p = cons(foo, bar)", p);
+	pdebug("car(p)", car(p));
+	pdebug("cdr(p)", cdr(p));
 	setcar(p, hoge);
 	setcdr(p, dona);
-	print(p);
+	pdebug(p);
 	p = cons(bar, p);
-	print(p);
+	pdebug(p);
 
 	p = cons(foo, NIL());
-	print(p);
+	pdebug(p);
 
 	std::cout << is_null(bar) << std::endl;
 	std::cout << is_null(NIL()) << std::endl;
@@ -79,7 +63,7 @@ void pair_test()
 void number_test()
 {
 	number* num = new number(188);
-	print(num);
+	pdebug(num);
 }
 
 void string_test()
@@ -89,7 +73,7 @@ void string_test()
 	write(str, out, true); out->newline();
 	write(str, out, false); out->newline();
 	out->flush();
-	print(out);
+	pdebug(out);
 }
 
 void character_test()
@@ -99,7 +83,7 @@ void character_test()
 	write(ch, out, true); out->newline();
 	write(ch, out, false); out->newline();
 	out->flush();
-	print(out);
+	pdebug(out);
 }
 
 void environment_test()
@@ -117,13 +101,13 @@ void environment_test()
 	object* vals = cons(i, cons(j, cons(k, NIL())));
 
 	environment* env = new environment(vars, vals, 0);
-	print(env->lookup(x));
-	print(env->lookup(y));
-	print(env->lookup(z));
+	pdebug(env->lookup(x));
+	pdebug(env->lookup(y));
+	pdebug(env->lookup(z));
 
 	try
 	{
-		print(env->lookup(xx));	
+		pdebug(env->lookup(xx));	
 	}
 	catch (const std::exception& e)
 	{
@@ -150,14 +134,14 @@ void eval_test()
 	environment* env = new environment(vars, vals, 0);
 
 	object* exp = cons(plus, (cons(x, (cons(y, NIL())))));
-	print(eval(exp, env));
+	pdebug(eval(exp, env));
 
 	object* params = cons(x, NIL());
 	object* body = cons(plus, cons(x, cons(x, NIL())));
 	closure* f = new closure(params, body, env);
 
 	exp = cons(f, cons(new number(5), NIL()));
-	print(eval(exp, env));
+	pdebug(eval(exp, env));
 }
 
 void scm_test()
