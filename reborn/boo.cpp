@@ -412,14 +412,12 @@ namespace boo
 					{
 						closure* f = dynamic_cast<closure*>(fn);
 						x = f->body();
-						pdebug(x);
 						env = new environment(f->params(),
 											  evlist(args, env),
 											  f->env());
 					}
 					else
 					{
-						pdebug(fn);
 						primitive* p = dynamic_cast<primitive*>(fn);
 						return p->apply(evlist(args, env));
 					}
