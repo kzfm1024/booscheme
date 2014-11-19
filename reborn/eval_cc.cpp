@@ -4,11 +4,11 @@
 
 #include "boo.h"
 #include "boo_types.h"
-#include "primitive_cc.h"
+#include "continuation.h"
 
 namespace boo
 {
-    object* eval_cc(object* x, environment* env, primitive* cc)
+    object* eval_cc(object* x, environment* env, continuation* cc)
     {
         //
         // The purpose of the while loop is to allow tail recursion.
@@ -57,7 +57,7 @@ namespace boo
                     else
 #endif
                     {
-						primitive_cc_define* cc2 = new primitive_cc_define(first(args), env, cc);
+						continuation_define* cc2 = new continuation_define(first(args), env, cc);
 						return eval_cc(second(args), env, cc2);
                     }
                 }
@@ -89,22 +89,45 @@ namespace boo
 #endif
                 else
                 {
+#if 1
+					continuation* cc2 = new continuation_procedure(args, env, cc);
+					return eval_cc(fn, env, cc2);
+#else
                     fn = eval(fn, env);
                     if (is_closure(fn))
                     {
                         closure* f = dynamic_cast<closure*>(fn);
+						/*
                         x = f->body();
                         env = new environment(f->params(),
                                               evlist(args, env),
                                               f->env());
+						*/
+							
+						//continuation* cc2 = new continuation_closure(f->body(), f->params(), f->env(), cc);
+						//evlist_cc(args, env, cc2);
                     }
                     else
                     {
-                        primitive* p = dynamic_cast<primitive*>(fn);
-                        return p->apply(evlist(args, env));
+						continuation* cc2 = new continuation_apply(cc);
+						return evlist_cc(x, env, cc2);
                     }
+#endif
                 }
             }
         }
     }
+
+	object* evlist_cc(object* lst, environment* env, continuation* cc)
+	{
+		if (is_null(lst))
+		{
+			return cc->apply(lst);
+		}
+		else
+		{
+			continuation* cc2 = new continuation_evlist(cdr(lst), env, cc);
+			return eval_cc(car(lst), env, cc2);
+		}
+	}
 }

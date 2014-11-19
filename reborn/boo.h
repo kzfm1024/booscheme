@@ -68,9 +68,9 @@ namespace boo
     object* eval(object* x, environment* env);
     object* evlist(object* lst, environment* env);
 
-    class primitive;
-    object* eval_cc(object* x, environment* env, primitive* cc);
-    // object* evlist(object* lst, environment* env);
+    class continuation;
+    object* eval_cc(object* x, environment* env, continuation* cc);
+    object* evlist_cc(object* lst, environment* env, continuation* cc);
 }
 
 #endif // _BOO_H

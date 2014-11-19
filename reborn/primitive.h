@@ -22,7 +22,7 @@ namespace boo
 		virtual std::string to_s();
 		virtual object* apply(object* args);
 
-	private:
+	protected:
 		primitive_func m_func;
 		int m_min_args;
 		int m_max_args;

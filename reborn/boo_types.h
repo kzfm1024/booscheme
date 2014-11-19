@@ -17,6 +17,7 @@
 #include "environment.h"
 #include "primitive.h"
 #include "primitive_cc.h"
+#include "continuation.h"
 #include "closure.h"
 #include "output_port.h"
 #include "input_port.h"

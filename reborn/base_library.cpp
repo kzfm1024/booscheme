@@ -17,6 +17,16 @@ namespace boo
 		env->define(symbol::get("*"),  new primitive(times, 0, UNLIMITED));
 	}
 
+    void base_library::install_cc(environment* env)
+	{
+		env->define(symbol::get("cons"), new primitive_cc(cons, 2));
+		env->define(symbol::get("car"),  new primitive_cc(car, 1)); // boo::car()
+		env->define(symbol::get("car"),  new primitive_cc(cdr, 1)); // boo::cdr()
+
+		env->define(symbol::get("+"),  new primitive_cc(plus, 0, UNLIMITED));
+		env->define(symbol::get("*"),  new primitive_cc(times, 0, UNLIMITED));
+	}
+
 	object* base_library::cons(object* args)
 	{
 		return boo::cons(first(args), second(args));

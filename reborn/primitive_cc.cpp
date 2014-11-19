@@ -2,34 +2,51 @@
 // primitive_cc.cpp
 //
 
+#include <sstream>
 #include "boo.h"
+#include "boo_types.h"
 #include "primitive_cc.h"
 
 namespace boo
 {
-	primitive_cc_define::primitive_cc_define(object* var, environment* env, primitive* cc) : 
-		primitive(0, 1),
-		m_var(var),
-		m_env(env),
-		m_cc(cc)
-	{
-	}
+    primitive_cc::primitive_cc(primitive_func func, int num_args) :
+        primitive(func, num_args)
+    {
+    }
 
-	object* primitive_cc_define::apply(object* val)
-	{
-		object* var = m_env->define(m_var, val);
-		return m_cc->apply(var);
-	} 
+    primitive_cc::primitive_cc(primitive_func func, int min_args, int max_args) :
+        primitive(func, min_args, max_args)
+    {
+    }
 
-	primitive_cc_write::primitive_cc_write(output_port* out, bool quoted) :
-		primitive(0, 1),
-		m_out(out),
-		m_quoted(quoted)
-	{
-	}
+    std::string primitive_cc::to_s()
+    {
+        std::ostringstream stream;
+        stream << "#<primitive_cc " << m_name << ">";
+        return stream.str();
+    }
 
-	object* primitive_cc_write::apply(object* x)
+	object* primitive_cc::apply(object* args)
 	{
-		boo::write(x, m_out, m_quoted);
-	}
+		continuation* cc = dynamic_cast<continuation*>(car(args));
+		args = cdr(args);
+
+        int num_args = length(args);
+        if (num_args < m_min_args)
+        {
+            std::stringstream msg;
+            msg << "too few args, " << num_args << ", for ";
+            msg << m_name << ": " << stringify(args);
+            return error(msg.str());
+        }
+        else if (num_args > m_max_args)
+        {
+            std::stringstream msg;
+            msg << "too many args, " << num_args << ", for ";
+            msg << m_name << ": " << stringify(args);
+            return error(msg.str());
+        }
+
+        return cc->apply((*m_func)(args));
+    } 
 }

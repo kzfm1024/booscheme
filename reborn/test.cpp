@@ -189,11 +189,11 @@ void scm_test2()
 void eval_cc_test()
 {
 	environment* env = new environment(NIL(), NIL(), 0);
-	// base_library::install(env);
+	base_library::install_cc(env);
 
 	input_port* in = new input_port(std::cin);
 	output_port* out = new output_port(std::cout);
-	primitive_cc_write* cc = new primitive_cc_write(out, true);
+	continuation_write* cc = new continuation_write(out, true);
 
 	while (true) 
 	{

@@ -21,6 +21,7 @@ namespace boo
 
 	public:
 		static void install(environment* env);
+		static void install_cc(environment* env);
 		
 	private:
 		static object* cons(object*);
