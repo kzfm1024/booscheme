@@ -72,10 +72,8 @@ namespace boo
 
 	object* continuation_closure::apply(object* args)
 	{
-		//
-		// NOT YET
-		//
-		return UNDEF();
+		environment* env = new environment(m_params, args, m_env);
+		return eval_cc(m_body, env, m_cc);
 	}
 
 	continuation_primitive::continuation_primitive(primitive_cc* prim, continuation* cc) :

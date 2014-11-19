@@ -25,6 +25,9 @@ namespace boo
 
 		env->define(symbol::get("+"),  new primitive_cc(plus, 0, UNLIMITED));
 		env->define(symbol::get("*"),  new primitive_cc(times, 0, UNLIMITED));
+
+		env->define(symbol::get("call-with-current-continuation"), new primitive_call_cc());
+		env->define(symbol::get("call/cc"), new primitive_call_cc());
 	}
 
 	object* base_library::cons(object* args)

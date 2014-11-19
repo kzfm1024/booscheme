@@ -1,25 +1,19 @@
 //
-// primitive_cc.cpp
+// primitive_call_cc.cpp
 //
 
 #include <sstream>
 #include "boo.h"
 #include "boo_types.h"
-#include "primitive_cc.h"
+#include "primitive_call_cc.h"
 
 namespace boo
 {
-    primitive_cc::primitive_cc(primitive_func func, int num_args) :
-        primitive(func, num_args)
+    primitive_call_cc::primitive_call_cc() : primitive_cc(0, 1)
     {
     }
 
-    primitive_cc::primitive_cc(primitive_func func, int min_args, int max_args) :
-        primitive(func, min_args, max_args)
-    {
-    }
-
-	object* primitive_cc::apply(object* args)
+	object* primitive_call_cc::apply(object* args)
 	{
 		continuation* cc = dynamic_cast<continuation*>(car(args));
 		args = cdr(args);
@@ -40,6 +34,9 @@ namespace boo
             return error(msg.str());
         }
 
-        return cc->apply((*m_func)(args));
+		closure* cl = dynamic_cast<closure*>(second(args));		
+		
+		environment* env = new environment(cl->params(), cc, cl->env());
+		return eval_cc(cl->body(), env, cc);
     } 
 }

@@ -24,9 +24,9 @@ namespace boo
 		static void install_cc(environment* env);
 		
 	private:
-		static object* cons(object*);
-		static object* plus(object*);
-		static object* times(object*);
+		static object* cons(object* args);
+		static object* plus(object* args);
+		static object* times(object* args);
     };
 }
 

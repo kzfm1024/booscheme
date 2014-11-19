@@ -89,30 +89,8 @@ namespace boo
 #endif
                 else
                 {
-#if 1
 					continuation* cc2 = new continuation_procedure(args, env, cc);
 					return eval_cc(fn, env, cc2);
-#else
-                    fn = eval(fn, env);
-                    if (is_closure(fn))
-                    {
-                        closure* f = dynamic_cast<closure*>(fn);
-						/*
-                        x = f->body();
-                        env = new environment(f->params(),
-                                              evlist(args, env),
-                                              f->env());
-						*/
-							
-						//continuation* cc2 = new continuation_closure(f->body(), f->params(), f->env(), cc);
-						//evlist_cc(args, env, cc2);
-                    }
-                    else
-                    {
-						continuation* cc2 = new continuation_apply(cc);
-						return evlist_cc(x, env, cc2);
-                    }
-#endif
                 }
             }
         }

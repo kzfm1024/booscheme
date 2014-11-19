@@ -17,7 +17,6 @@ namespace boo
 		primitive_cc(primitive_func func, int min_args, int max_args);
 		virtual ~primitive_cc() {} 
 		
-		virtual std::string to_s();
 		virtual object* apply(object* args);
 	};
 }
