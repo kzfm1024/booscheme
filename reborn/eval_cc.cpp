@@ -33,7 +33,7 @@ namespace boo
 
                 if (is_symbol(fn, "quote")) // QUOTE
                 {
-                    return cc->apply(list(car(args)));
+                    return cc->apply(car(args));
                 }
 #if 0
                 else if (is_symbol(fn, "begin")) // BEGIN
@@ -78,7 +78,7 @@ namespace boo
 #endif
                 else if (is_symbol(fn, "lambda")) // LAMBDA
                 {
-                    return cc->apply(list(new closure(first(args), second(args), env)));
+                    return cc->apply(new closure(first(args), second(args), env));
 				}
 #if 0
                 else if (is_symbol(fn, "macro"))
