@@ -23,6 +23,7 @@
 #include "procedure.h"
 #include "closure.h"
 #include "primitive.h"
+#include "continuation.h"
 #include "output_port.h"
 #include "eof.h"
 
@@ -212,9 +213,15 @@ namespace boo
 
     bool is_closure(object* x)
     {
-        closure* c = dynamic_cast<closure*>(x);
-        return c ? true : false;
+        closure* cl = dynamic_cast<closure*>(x);
+        return cl ? true : false;
     }
+
+	bool is_continuation(object* x)
+	{
+		continuation* cc = dynamic_cast<continuation*>(x);
+		return cc ? true : false;
+	}
 
     bool is_eof(object* x)
     {

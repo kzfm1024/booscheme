@@ -7,15 +7,16 @@
 #define _CONTINUATION_H
 
 #include "environment.h"
+#include "procedure.h"
 #include "primitive_cc.h"
 #include "output_port.h"
 
 namespace boo
 {
-	class continuation : public primitive_cc
+	class continuation : public procedure
 	{
 	public:
-		continuation(int num_args) : primitive_cc(0, num_args) {}
+		continuation(const std::string& name) { set_name(name); }
 		~continuation() {}
 
 		virtual object* apply(object* val) { return val; }

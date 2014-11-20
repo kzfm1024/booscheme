@@ -91,6 +91,7 @@ namespace boo
 					pdebug("#0 x", x);
 					pdebug("#1 fn", fn);
 					pdebug("#2 args", args);
+					pdebug("#3 cc", cc);
 					continuation* cc2 = new continuation_procedure(args, env, cc);
 					return eval_cc(fn, env, cc2);
                 }

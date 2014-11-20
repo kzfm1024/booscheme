@@ -55,6 +55,7 @@ namespace boo
     bool is_symbol(object* x, const std::string& s);
     bool is_procedure(object* x, const std::string& s);
     bool is_closure(object* x);
+    bool is_continuation(object* x);
     bool is_eof(object* x);
     number* to_number(const std::string& s);
 

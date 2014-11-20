@@ -10,12 +10,11 @@
 namespace boo
 {
 	continuation_define::continuation_define(object* var, environment* env, continuation* cc) : 
-		continuation(1),
+		continuation("continuation_define"),
 		m_var(var),
 		m_env(env),
 		m_cc(cc)
 	{
-		set_name("continuation_define");
 	}
 
 	object* continuation_define::apply(object* val)
@@ -25,11 +24,10 @@ namespace boo
 	} 
 
 	continuation_write::continuation_write(output_port* out, bool quoted) :
-		continuation(1),
+		continuation("continuation_write"),
 		m_out(out),
 		m_quoted(quoted)
 	{
-		set_name("continuation_write");
 	}
 
 	object* continuation_write::apply(object* val)
@@ -39,23 +37,27 @@ namespace boo
 	}
 
 	continuation_procedure::continuation_procedure(object* args, environment* env, continuation* cc) :
-		continuation(1),
+		continuation("continuation_procedure"),
 		m_args(args),
 		m_env(env),
 		m_cc(cc)
 	{
-		set_name("continuation_procedure");
 	}
 
 	object* continuation_procedure::apply(object* proc)
 	{
-		pdebug("continuation_procedure", proc);
-
-			if (is_closure(proc))
+		pdebug("continuation_procedure::apply", proc);
+		
+		if (is_closure(proc))
 		{
 			closure* cl = dynamic_cast<closure*>(proc);
 			continuation* cc2 = new continuation_closure(cl->body(), cl->params(), cl->env(), m_cc);
 			return evlist_cc(m_args, m_env, cc2);
+		}
+		else if (is_continuation(proc))
+		{
+			continuation* cc = dynamic_cast<continuation*>(proc);
+			return cc->apply(m_args);
 		}
 		else
 		{
@@ -69,7 +71,7 @@ namespace boo
 
 
 	continuation_closure::continuation_closure(object* body, object* params, environment* env, continuation* cc) :
-		continuation(1),
+		continuation("continuation_closure"),
 		m_body(body),
 		m_params(params),
 		m_env(env),
@@ -84,11 +86,10 @@ namespace boo
 	}
 
 	continuation_primitive::continuation_primitive(primitive_cc* prim, continuation* cc) :
-		continuation(1),
+		continuation("continuation_primitive"),
 		m_prim(prim),
 		m_cc(cc)
 	{
-		set_name("continuation_primitive");
 	}
 
 	object* continuation_primitive::apply(object* args)
@@ -100,10 +101,9 @@ namespace boo
 	}
 
 	continuation_apply::continuation_apply(continuation* cc) : 
-		continuation(1),
+		continuation("continuation_apply"),
 		m_cc(cc)
 	{
-		set_name("continuation_apply");
 	}
 
 	object* continuation_apply::apply(object* fn_and_args)
@@ -116,12 +116,11 @@ namespace boo
 	}
 
 	continuation_evlist::continuation_evlist(object* lst, environment* env, continuation* cc) : 
-		continuation(1),
+		continuation("continuation_evlist"),
 		m_lst(lst),
 		m_env(env),
 		m_cc(cc)
 	{
-		set_name("continuation_evlist");
 	}
 
 	object* continuation_evlist::apply(object* args)
@@ -141,11 +140,10 @@ namespace boo
 	} 
 
 	continuation_evlist2::continuation_evlist2(object* x, continuation* cc) :
-		continuation(1),
+		continuation("continuation_evlist2"),
 		m_x(x),
 		m_cc(cc)
 	{
-		set_name("continuation_evlist2");
 	}
 
 	object* continuation_evlist2::apply(object* y)
