@@ -7,15 +7,15 @@
 #define _CONTINUATION_H
 
 #include "environment.h"
-#include "primitive.h"
+#include "primitive_cc.h"
 #include "output_port.h"
 
 namespace boo
 {
-	class continuation : public primitive
+	class continuation : public primitive_cc
 	{
 	public:
-		continuation(int num_args) : primitive(0, num_args) {}
+		continuation(int num_args) : primitive_cc(0, num_args) {}
 		~continuation() {}
 
 		virtual object* apply(object* val) { return val; }
