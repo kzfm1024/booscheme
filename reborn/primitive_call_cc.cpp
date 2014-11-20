@@ -34,7 +34,11 @@ namespace boo
             return error(msg.str());
         }
 
-		closure* cl = dynamic_cast<closure*>(car(args));		
+		closure* cl = dynamic_cast<closure*>(car(args));
+		pdebug("primitive_call_cc cc", cc);
+		pdebug("primitive_call_cc cl", cl);
+		pdebug("primitive_call_cc cl->params()", cl->params());
+		pdebug("primitive_call_cc cl->body()", cl->body());
 		environment* env = new environment(cl->params(), list(cc), cl->env());
 		return eval_cc(cl->body(), env, cc);
     } 

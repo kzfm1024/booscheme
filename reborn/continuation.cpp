@@ -15,6 +15,7 @@ namespace boo
 		m_env(env),
 		m_cc(cc)
 	{
+		set_name("continuation_define");
 	}
 
 	object* continuation_define::apply(object* val)
@@ -28,11 +29,12 @@ namespace boo
 		m_out(out),
 		m_quoted(quoted)
 	{
+		set_name("continuation_write");
 	}
 
 	object* continuation_write::apply(object* val)
 	{
-		pdebug(val);
+		pdebug("continuation_write::apply", val);
 		return boo::write(val, m_out, m_quoted);
 	}
 
@@ -42,6 +44,7 @@ namespace boo
 		m_env(env),
 		m_cc(cc)
 	{
+		set_name("continuation_procedure");
 	}
 
 	object* continuation_procedure::apply(object* proc)
@@ -76,7 +79,6 @@ namespace boo
 
 	object* continuation_closure::apply(object* args)
 	{
-		args = car(args);
 		environment* env = new environment(m_params, args, m_env);
 		return eval_cc(m_body, env, m_cc);
 	}
@@ -86,12 +88,14 @@ namespace boo
 		m_prim(prim),
 		m_cc(cc)
 	{
+		set_name("continuation_primitive");
 	}
 
 	object* continuation_primitive::apply(object* args)
 	{
-		pdebug(m_prim);
-		pdebug(args);
+		pdebug("continuation_primitive::apply m_prim", m_prim);
+		pdebug("continuation_primitive::apply m_cc", m_cc);
+		pdebug("continuation_primitive::apply args", args);
 		return m_prim->apply(cons(m_cc, args));
 	}
 
@@ -99,6 +103,7 @@ namespace boo
 		continuation(1),
 		m_cc(cc)
 	{
+		set_name("continuation_apply");
 	}
 
 	object* continuation_apply::apply(object* fn_and_args)
@@ -116,15 +121,16 @@ namespace boo
 		m_env(env),
 		m_cc(cc)
 	{
+		set_name("continuation_evlist");
 	}
 
 	object* continuation_evlist::apply(object* args)
 	{
-		pdebug("continuation_evlist::apply", args);
+		// pdebug("continuation_evlist::apply", args);
 
 		if (is_null(args))
 		{
-			return m_cc->apply(args); // FIXME
+			return m_cc->apply(args);
 		}
 		else
 		{
@@ -139,20 +145,14 @@ namespace boo
 		m_x(x),
 		m_cc(cc)
 	{
+		set_name("continuation_evlist2");
 	}
 
 	object* continuation_evlist2::apply(object* y)
 	{
 		pdebug("continuation_evlist2::apply m_x", m_x);
 		pdebug("continuation_evlist2::apply y", y);
-
-		if (is_null(y))
-		{
-			return m_cc->apply(cons(m_x, y));
-		}
-		else
-		{
-			return m_cc->apply(cons(m_x, y));
-		}
+		pdebug("continuation_evlist2::apply m_cc", m_cc);
+		return m_cc->apply(cons(m_x, y));
 	}
 }

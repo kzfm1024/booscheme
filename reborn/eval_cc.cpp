@@ -47,15 +47,14 @@ namespace boo
 #endif
                 else if (is_symbol(fn, "define")) // DEFINE
                 {
-#if 0
                     if (is_pair(car(args)))
                     {
                         object* lx = cons(symbol::get("lambda"),
                                           cons(cdr(car(args)), cdr(args)));
-                        return env->define(car(car(args)), eval(lx, env));
-                    }
+						continuation_define* cc2 = new continuation_define(car(car(args)), env, cc);
+						return eval_cc(lx, env, cc2);
+					}
                     else
-#endif
                     {
 						continuation_define* cc2 = new continuation_define(first(args), env, cc);
 						return eval_cc(second(args), env, cc2);
@@ -101,6 +100,9 @@ namespace boo
 
 	object* evlist_cc(object* lst, environment* env, continuation* cc)
 	{
+		pdebug("evlist_cc lst", lst);
+		pdebug("evlist_cc cc", cc);
+
 		if (is_null(lst))
 		{
 			return cc->apply(lst);
