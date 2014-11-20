@@ -54,10 +54,10 @@ namespace boo
 			continuation* cc2 = new continuation_closure(cl->body(), cl->params(), cl->env(), m_cc);
 			return evlist_cc(m_args, m_env, cc2);
 		}
-		else if (is_continuation(proc))
+		else if (is_continuation(proc)) // call-with-current-continuation
 		{
 			continuation* cc = dynamic_cast<continuation*>(proc);
-			return cc->apply(m_args);
+			return cc->apply(car(m_args)); // FIXME
 		}
 		else
 		{

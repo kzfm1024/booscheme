@@ -20,6 +20,7 @@ namespace boo
             if (is_symbol(x))   // VARIABLE
             {
                 symbol* sym = dynamic_cast<symbol*>(x);
+				pdebug("eval_cc sym", sym);
 				return cc->apply(env->lookup(sym));
             }
             else if (!is_pair(x)) // CONSTANT
