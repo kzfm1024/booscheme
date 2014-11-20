@@ -41,6 +41,7 @@ namespace boo
     object* second(object* x);
     object* third(object* x);
 
+    object* list(object* a);
     object* list(object* a, object* b);
     int length(object* x);
 

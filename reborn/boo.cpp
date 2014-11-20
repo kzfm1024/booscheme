@@ -135,6 +135,11 @@ namespace boo
         return car(cdr(cdr(x)));
     }
 
+    object* list(object* a)
+    {
+        return cons(a, NIL());
+    }
+
     object* list(object* a, object* b)
     {
         return cons(a, cons(b, NIL()));

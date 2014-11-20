@@ -32,7 +32,8 @@ namespace boo
 
 	object* continuation_write::apply(object* val)
 	{
-		boo::write(val, m_out, m_quoted);
+		pdebug(val);
+		return boo::write(val, m_out, m_quoted);
 	}
 
 	continuation_procedure::continuation_procedure(object* args, environment* env, continuation* cc) :
@@ -45,7 +46,9 @@ namespace boo
 
 	object* continuation_procedure::apply(object* proc)
 	{
-		if (is_closure(proc))
+		pdebug("continuation_procedure", proc);
+
+			if (is_closure(proc))
 		{
 			closure* cl = dynamic_cast<closure*>(proc);
 			continuation* cc2 = new continuation_closure(cl->body(), cl->params(), cl->env(), m_cc);
@@ -53,6 +56,7 @@ namespace boo
 		}
 		else
 		{
+			pdebug(proc);
 			primitive_cc* prim = dynamic_cast<primitive_cc*>(proc);
 			assert(prim);
 			continuation* cc2 = new continuation_primitive(prim, m_cc);
@@ -72,6 +76,7 @@ namespace boo
 
 	object* continuation_closure::apply(object* args)
 	{
+		args = car(args);
 		environment* env = new environment(m_params, args, m_env);
 		return eval_cc(m_body, env, m_cc);
 	}
@@ -85,6 +90,8 @@ namespace boo
 
 	object* continuation_primitive::apply(object* args)
 	{
+		pdebug(m_prim);
+		pdebug(args);
 		return m_prim->apply(cons(m_cc, args));
 	}
 
@@ -96,10 +103,11 @@ namespace boo
 
 	object* continuation_apply::apply(object* fn_and_args)
 	{
+		fn_and_args = car(fn_and_args);
 		primitive_cc* fn = dynamic_cast<primitive_cc*>(car(fn_and_args));
 		assert(fn);
 		object* args = cdr(fn_and_args);
-		return fn->apply(cons(m_cc, args));
+		return fn->apply(list(cons(m_cc, args)));
 	}
 
 	continuation_evlist::continuation_evlist(object* lst, environment* env, continuation* cc) : 
@@ -110,10 +118,20 @@ namespace boo
 	{
 	}
 
-	object* continuation_evlist::apply(object* val)
+	object* continuation_evlist::apply(object* args)
 	{
-		continuation* cc2 = new continuation_evlist2(val, m_cc);
-		return evlist_cc(m_lst, m_env, cc2);
+		pdebug("continuation_evlist::apply", args);
+
+		if (is_null(args))
+		{
+			return m_cc->apply(args); // FIXME
+		}
+		else
+		{
+			continuation* cc2 = new continuation_evlist2(args, m_cc);
+			return evlist_cc(m_lst, m_env, cc2);
+		}
+
 	} 
 
 	continuation_evlist2::continuation_evlist2(object* x, continuation* cc) :
@@ -125,6 +143,16 @@ namespace boo
 
 	object* continuation_evlist2::apply(object* y)
 	{
-		return m_cc->apply(cons(m_x, y));
+		pdebug("continuation_evlist2::apply m_x", m_x);
+		pdebug("continuation_evlist2::apply y", y);
+
+		if (is_null(y))
+		{
+			return m_cc->apply(cons(m_x, y));
+		}
+		else
+		{
+			return m_cc->apply(cons(m_x, y));
+		}
 	}
 }

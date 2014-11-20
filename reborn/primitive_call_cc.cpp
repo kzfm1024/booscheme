@@ -34,9 +34,8 @@ namespace boo
             return error(msg.str());
         }
 
-		closure* cl = dynamic_cast<closure*>(second(args));		
-		
-		environment* env = new environment(cl->params(), cc, cl->env());
+		closure* cl = dynamic_cast<closure*>(car(args));		
+		environment* env = new environment(cl->params(), list(cc), cl->env());
 		return eval_cc(cl->body(), env, cc);
     } 
 }

@@ -33,7 +33,7 @@ namespace boo
 
                 if (is_symbol(fn, "quote")) // QUOTE
                 {
-                    return cc->apply(car(args));
+                    return cc->apply(list(car(args)));
                 }
 #if 0
                 else if (is_symbol(fn, "begin")) // BEGIN
@@ -78,8 +78,8 @@ namespace boo
 #endif
                 else if (is_symbol(fn, "lambda")) // LAMBDA
                 {
-                    return new closure(first(args), second(args), env);
-                }
+                    return cc->apply(list(new closure(first(args), second(args), env)));
+				}
 #if 0
                 else if (is_symbol(fn, "macro"))
                 {
@@ -89,6 +89,9 @@ namespace boo
 #endif
                 else
                 {
+					pdebug("#0 x", x);
+					pdebug("#1 fn", fn);
+					pdebug("#2 args", args);
 					continuation* cc2 = new continuation_procedure(args, env, cc);
 					return eval_cc(fn, env, cc2);
                 }
@@ -102,6 +105,10 @@ namespace boo
 		{
 			return cc->apply(lst);
 		}
+        else if (!is_pair(lst))
+        {
+            return error("illegal arg list: " + stringify(lst));
+        }
 		else
 		{
 			continuation* cc2 = new continuation_evlist(cdr(lst), env, cc);
