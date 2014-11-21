@@ -8,6 +8,9 @@
 
 #include <string>
 
+#define PDEBUG(msg,x) pdebug(msg,x)
+#define DEBUG(msg,x)
+
 namespace boo
 {
     class object;
@@ -20,6 +23,7 @@ namespace boo
     class output_port;
     class eof;
     class number;
+    class continuation;
 
     boolean* TRUE();
     boolean* FALSE();
@@ -70,7 +74,6 @@ namespace boo
     object* eval(object* x, environment* env);
     object* evlist(object* lst, environment* env);
 
-    class continuation;
     object* eval_cc(object* x, environment* env, continuation* cc);
     object* evlist_cc(object* lst, environment* env, continuation* cc);
 }

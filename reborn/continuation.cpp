@@ -32,7 +32,7 @@ namespace boo
 
 	object* continuation_write::apply(object* val)
 	{
-		pdebug("continuation_write::apply", val);
+		DEBUG("continuation_write::apply", val);
 		return boo::write(val, m_out, m_quoted);
 	}
 
@@ -46,7 +46,7 @@ namespace boo
 
 	object* continuation_procedure::apply(object* proc)
 	{
-		pdebug("continuation_procedure::apply", proc);
+		DEBUG("continuation_procedure::apply", proc);
 		
 		if (is_closure(proc))
 		{
@@ -57,11 +57,10 @@ namespace boo
 		else if (is_continuation(proc)) // call-with-current-continuation
 		{
 			continuation* cc = dynamic_cast<continuation*>(proc);
-			return cc->apply(car(m_args)); // FIXME
+			return cc->apply(car(m_args));
 		}
 		else
 		{
-			pdebug(proc);
 			primitive_cc* prim = dynamic_cast<primitive_cc*>(proc);
 			assert(prim);
 			continuation* cc2 = new continuation_primitive(prim, m_cc);
@@ -94,9 +93,9 @@ namespace boo
 
 	object* continuation_primitive::apply(object* args)
 	{
-		pdebug("continuation_primitive::apply m_prim", m_prim);
-		pdebug("continuation_primitive::apply m_cc", m_cc);
-		pdebug("continuation_primitive::apply args", args);
+		DEBUG("continuation_primitive::apply m_prim", m_prim);
+		DEBUG("continuation_primitive::apply m_cc", m_cc);
+		DEBUG("continuation_primitive::apply args", args);
 		return m_prim->apply(cons(m_cc, args));
 	}
 
@@ -125,8 +124,8 @@ namespace boo
 
 	object* continuation_evlist::apply(object* args)
 	{
-		// pdebug("continuation_evlist::apply", args);
-
+		DEBUG("continuation_evlist::apply", args);
+		
 		if (is_null(args))
 		{
 			return m_cc->apply(args);
@@ -148,9 +147,9 @@ namespace boo
 
 	object* continuation_evlist2::apply(object* y)
 	{
-		pdebug("continuation_evlist2::apply m_x", m_x);
-		pdebug("continuation_evlist2::apply y", y);
-		pdebug("continuation_evlist2::apply m_cc", m_cc);
+		DEBUG("continuation_evlist2::apply m_x", m_x);
+		DEBUG("continuation_evlist2::apply y", y);
+		DEBUG("continuation_evlist2::apply m_cc", m_cc);
 		return m_cc->apply(cons(m_x, y));
 	}
 }

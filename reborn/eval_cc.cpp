@@ -20,7 +20,7 @@ namespace boo
             if (is_symbol(x))   // VARIABLE
             {
                 symbol* sym = dynamic_cast<symbol*>(x);
-				pdebug("eval_cc sym", sym);
+				DEBUG("eval_cc sym", sym);
 				return cc->apply(env->lookup(sym));
             }
             else if (!is_pair(x)) // CONSTANT
@@ -89,10 +89,10 @@ namespace boo
 #endif
                 else
                 {
-					pdebug("#0 x", x);
-					pdebug("#1 fn", fn);
-					pdebug("#2 args", args);
-					pdebug("#3 cc", cc);
+					DEBUG("#0 x", x);
+					DEBUG("#1 fn", fn);
+					DEBUG("#2 args", args);
+					DEBUG("#3 cc", cc);
 					continuation* cc2 = new continuation_procedure(args, env, cc);
 					return eval_cc(fn, env, cc2);
                 }
@@ -102,8 +102,8 @@ namespace boo
 
 	object* evlist_cc(object* lst, environment* env, continuation* cc)
 	{
-		pdebug("evlist_cc lst", lst);
-		pdebug("evlist_cc cc", cc);
+		DEBUG("evlist_cc lst", lst);
+		DEBUG("evlist_cc cc", cc);
 
 		if (is_null(lst))
 		{

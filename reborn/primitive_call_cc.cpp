@@ -17,7 +17,7 @@ namespace boo
 	{
 		continuation* cc = dynamic_cast<continuation*>(car(args));
 		args = cdr(args);
-
+		
         int num_args = length(args);
         if (num_args < m_min_args)
         {
@@ -35,10 +35,10 @@ namespace boo
         }
 
 		closure* cl = dynamic_cast<closure*>(car(args));
-		pdebug("primitive_call_cc cc", cc);
-		pdebug("primitive_call_cc cl", cl);
-		pdebug("primitive_call_cc cl->params()", cl->params());
-		pdebug("primitive_call_cc cl->body()", cl->body());
+		DEBUG("primitive_call_cc cc", cc);
+		DEBUG("primitive_call_cc cl", cl);
+		DEBUG("primitive_call_cc cl->params()", cl->params());
+		DEBUG("primitive_call_cc cl->body()", cl->body());
 		environment* env = new environment(cl->params(), list(cc), cl->env());
 		return eval_cc(cl->body(), env, cc);
     } 
