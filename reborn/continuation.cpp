@@ -36,6 +36,29 @@ namespace boo
 		return boo::write(val, m_out, m_quoted);
 	}
 
+	continuation_begin::continuation_begin(object* rest, environment* env, continuation* cc) :
+		continuation("continuation_begin"),
+		m_rest(rest),
+		m_env(env),
+		m_cc(cc)
+	{
+	}
+
+	object* continuation_begin::apply(object* val)
+	{
+		DEBUG("continuation_begin::apply val", val);
+		DEBUG("continuation_begin::apply m_rest", m_rest);
+		if (is_null(m_rest))
+		{
+			return m_cc->apply(val);
+		}
+		else
+		{
+			continuation* cc2 = new continuation_begin(cdr(m_rest), m_env, m_cc);
+			return eval_cc(car(m_rest), m_env, cc2);
+		}
+	}
+
 	continuation_procedure::continuation_procedure(object* args, environment* env, continuation* cc) :
 		continuation("continuation_procedure"),
 		m_args(args),

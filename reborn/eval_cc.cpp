@@ -4,7 +4,7 @@
 
 #include "boo.h"
 #include "boo_types.h"
-#include "continuation.h"
+//#include "continuation.h"
 
 namespace boo
 {
@@ -36,16 +36,11 @@ namespace boo
                 {
                     return cc->apply(car(args));
                 }
-#if 0
                 else if (is_symbol(fn, "begin")) // BEGIN
                 {
-                    for (; !is_null(cdr(args)); args = cdr(args))
-                    {
-                        eval(car(args), env);
-                    }
-                    x = car(args);
+					continuation* cc2 = new continuation_begin(cdr(args), env, cc);
+					return eval_cc(car(args), env, cc2);
                 }
-#endif
                 else if (is_symbol(fn, "define")) // DEFINE
                 {
                     if (is_pair(car(args)))
