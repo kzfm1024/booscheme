@@ -1,10 +1,10 @@
 //
-// boo_types.h
+// boo_objects.h
 //
 
 #pragma once
-#ifndef _BOO_TYPES_H
-#define _BOO_TYPES_H
+#ifndef _BOO_OBJECTS_H
+#define _BOO_OBJECTS_H
 
 #include "boolean.h"
 #include "null.h"
@@ -23,5 +23,6 @@
 #include "output_port.h"
 #include "input_port.h"
 #include "eof.h"
+#include "syntax.h"
 
-#endif // _BOO_TYPES_H
+#endif // _BOO_OBJECTS_H
