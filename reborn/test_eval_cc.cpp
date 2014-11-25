@@ -1,6 +1,6 @@
 #include <iostream>
 #include "boo.h"
-#include "boo_types.h"
+#include "boo_objects.h"
 #include "base_library.h"
 
 using namespace boo;

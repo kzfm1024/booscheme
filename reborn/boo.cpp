@@ -7,25 +7,10 @@
 #include <stdexcept>
 #include <stdlib.h> // FIXME: strtol 
 #include <errno.h> // FIXME
-#include <limits.h> // FIXME
+//#include <limits.h> // FIXME
 #include <assert.h>
 #include "boo.h"
-
-#include "boolean.h"
-#include "null.h"
-#include "pair.h"
-#include "number.h"
-#include "string_t.h"
-#include "character.h"
-#include "symbol.h"
-#include "misc.h"
-#include "environment.h"
-#include "procedure.h"
-#include "closure.h"
-#include "primitive.h"
-#include "continuation.h"
-#include "output_port.h"
-#include "eof.h"
+#include "boo_objects.h"
 
 namespace boo
 {
@@ -410,6 +395,21 @@ namespace boo
                 {
                     return new closure(first(args), second(args), env);
                 }
+				else if (is_symbol(fn, "define-syntax"))
+				{
+					symbol* sym = dynamic_cast<symbol*>(first(args));
+					assert(sym);
+					object* rule = second(args);
+					syntax* synx = new syntax(sym->name(), rule);
+					PDEBUG("define-syntax sym", sym);
+					PDEBUG("define-syntax rule", rule);
+#if 1 // TENTATIVE
+					env->define(sym, synx);
+					return synx;
+#else
+					return env->define(sym, synx);
+#endif
+				}
 #if 0
                 else if (is_symbol(fn, "macro"))
                 {

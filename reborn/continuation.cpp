@@ -4,7 +4,7 @@
 
 #include <assert.h>
 #include "boo.h"
-#include "boo_types.h"
+#include "boo_objects.h"
 #include "continuation.h"
 
 namespace boo

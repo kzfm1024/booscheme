@@ -1,6 +1,6 @@
 #include <limits.h> // INT_MAX
 #include "boo.h"
-#include "boo_types.h"
+#include "boo_objects.h"
 #include "base_library.h"
 
 static int UNLIMITED = INT_MAX;

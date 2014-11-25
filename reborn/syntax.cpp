@@ -4,7 +4,7 @@
 
 #include <sstream>
 #include "boo.h"
-#include "boo_types.h"
+#include "boo_objects.h"
 #include "syntax.h"
 
 namespace boo

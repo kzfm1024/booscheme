@@ -5,7 +5,7 @@
 #include <cctype>
 #include <stdexcept>
 #include "boo.h"
-#include "boo_types.h"
+#include "boo_objects.h"
 #include "input_port.h"
 
 namespace boo

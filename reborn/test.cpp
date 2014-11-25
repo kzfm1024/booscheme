@@ -3,7 +3,7 @@
 #include <limits.h>
 
 #include "boo.h"
-#include "boo_types.h"
+#include "boo_objects.h"
 #include "base_library.h"
 
 using namespace boo;
@@ -170,7 +170,7 @@ void scm_test()
 	std::cout << std::endl;
 }
 
-void scm_test2()
+void test_eval()
 {
 	environment* env = new environment(NIL(), NIL(), 0);
 	base_library::install(env);
@@ -180,25 +180,8 @@ void scm_test2()
 
 	while (true) 
 	{
-		std::cout << "boo> " << std::flush;
+		std::cout << "eval> " << std::flush;
 		write(eval(in->read(), env), out, true);
-		std::cout << std::endl;
-	}
-}
-
-void eval_cc_test()
-{
-	environment* env = new environment(NIL(), NIL(), 0);
-	base_library::install_cc(env);
-
-	input_port* in = new input_port(std::cin);
-	output_port* out = new output_port(std::cout);
-	continuation_write* cc = new continuation_write(out, true);
-
-	while (true) 
-	{
-		std::cout << "boo> " << std::flush;
-		eval_cc(in->read(), env, cc);
 		std::cout << std::endl;
 	}
 }
@@ -218,6 +201,5 @@ int main()
 	scm_test();
 #endif
 
-	// scm_test2();
-	eval_cc_test();
+	test_eval();
 }
