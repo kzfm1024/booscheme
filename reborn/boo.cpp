@@ -5,9 +5,9 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
-#include <stdlib.h> // FIXME: strtol 
-#include <errno.h> // FIXME
-//#include <limits.h> // FIXME
+#include <stdlib.h> // for strtol()
+#include <errno.h>  // for strtol() error handling
+#include <limits.h> // for strtol() error handling
 #include <assert.h>
 #include "boo.h"
 #include "boo_objects.h"
@@ -121,15 +121,58 @@ namespace boo
         return car(cdr(cdr(x)));
     }
 
-    object* list(object* a)
+    object* list(object* x)
     {
-        return cons(a, NIL());
+        return cons(x, NIL());
     }
 
-    object* list(object* a, object* b)
+    object* list(object* x, object* y)
     {
-        return cons(a, cons(b, NIL()));
+        return cons(x, cons(y, NIL()));
     }
+
+	object* eq(object* x, object* y)
+	{
+		return x == y ? TRUE() : FALSE();
+	}
+
+	object* eqv(object* x, object* y)
+	{
+		if (is_boolean(x) && is_boolean(y))
+		{
+			return truth(x) == truth(y) ? TRUE() : FALSE();
+		}
+		else if (is_symbol(x) && is_symbol(y))
+		{
+			return x == y ? TRUE() : FALSE();
+		}
+		else if (is_number(x) && is_number(y))
+		{
+			number* nx = dynamic_cast<number*>(x);
+			number* ny = dynamic_cast<number*>(y);
+			return nx->to_i() == ny->to_i() ? TRUE() : FALSE();
+		}
+		else if (is_null(x) && is_null(y))
+		{
+			return TRUE();
+		}
+		else if (is_pair(x) && is_pair(y))
+		{
+			return x == y ? TRUE() : FALSE();
+		}
+		else if (is_procedure(x) && is_procedure(y))
+		{
+			return x == y ? TRUE() : FALSE();
+		}
+
+		return FALSE();
+	}
+
+	object* equal(object* x, object* y)
+	{
+		// NOT YET
+		return FALSE();
+	}
 
     int length(object* x)
     {
@@ -147,6 +190,12 @@ namespace boo
         boolean* b = dynamic_cast<boolean*>(x);
         return (b == FALSE()) ? false : true;
     }
+
+	bool is_boolean(object* x)
+	{
+        boolean* b = dynamic_cast<boolean*>(x);
+		return b ? true : false;
+	}
 
     bool is_null(object* x)
     {
@@ -188,6 +237,18 @@ namespace boo
     {
         symbol* sym = dynamic_cast<symbol*>(x);
         return (sym && sym->name() == s) ? true : false;
+    }
+
+	bool is_syntax(object* x)
+	{
+		syntax* synx = dynamic_cast<syntax*>(x);
+		return synx ? true : false;
+	}
+
+    bool is_procedure(object* x)
+    {
+        procedure* proc = dynamic_cast<procedure*>(x);
+        return proc ? true : false;
     }
 
     bool is_procedure(object* x, const std::string& s)
@@ -326,132 +387,5 @@ namespace boo
     void pdebug(const std::string& msg, object* x)
     {
         std::cout << msg << ": " << stringify(x) << std::endl << std::flush;
-    }
-
-    object* eval(object* x, environment* env)
-    {
-        //
-        // The purpose of the while loop is to allow tail recursion.
-        // The idea is that in a tail recursive position, we do "x = ..."
-        // and loop, rather than doing "return eval(...)".
-        //
-        while (true)
-        {
-            if (is_symbol(x))   // VARIABLE
-            {
-                symbol* sym = dynamic_cast<symbol*>(x);
-                return env->lookup(sym);
-            }
-            else if (!is_pair(x)) // CONSTANT
-            {
-                return x;
-            }
-            else
-            {
-                object* fn = car(x);
-                object* args = cdr(x);
-
-                if (is_symbol(fn, "quote")) // QUOTE
-                {
-                    return car(args);
-                }
-                else if (is_symbol(fn, "begin")) // BEGIN
-                {
-                    for (; !is_null(cdr(args)); args = cdr(args))
-                    {
-                        eval(car(args), env);
-                    }
-                    x = car(args);
-                }
-                else if (is_symbol(fn, "define")) // DEFINE
-                {
-                    if (is_pair(car(args)))
-                    {
-                        object* lx = cons(symbol::get("lambda"),
-                                          cons(cdr(car(args)), cdr(args)));
-                        return env->define(car(car(args)), eval(lx, env));
-                    }
-                    else
-                    {
-                        return env->define(first(args), eval(second(args), env));
-                    }
-                }
-                else if (is_symbol(fn, "set!")) // SET!
-                {
-                    return env->set(first(args), eval(second(args), env));
-                }
-                else if (is_symbol(fn, "if")) // IF
-                {
-                    object* test = eval(first(args), env);
-                    x = truth(test) ? second(args) : third(args);
-                }
-#if 0
-                else if (is_symbol(fn, "cond")) // COND
-                {
-                    x = reduceCond(args, env);
-                }
-#endif
-                else if (is_symbol(fn, "lambda")) // LAMBDA
-                {
-                    return new closure(first(args), second(args), env);
-                }
-				else if (is_symbol(fn, "define-syntax"))
-				{
-					symbol* sym = dynamic_cast<symbol*>(first(args));
-					assert(sym);
-					object* rule = second(args);
-					syntax* synx = new syntax(sym->name(), rule);
-					PDEBUG("define-syntax sym", sym);
-					PDEBUG("define-syntax rule", rule);
-#if 1 // TENTATIVE
-					env->define(sym, synx);
-					return synx;
-#else
-					return env->define(sym, synx);
-#endif
-				}
-#if 0
-                else if (is_symbol(fn, "macro"))
-                {
-                    // FIXME
-                    // return Macro(new macro(car(args), cdr(args), env);
-                }
-#endif
-                else
-                {
-                    fn = eval(fn, env);
-                    if (is_closure(fn))
-                    {
-                        closure* f = dynamic_cast<closure*>(fn);
-                        x = f->body();
-                        env = new environment(f->params(),
-                                              evlist(args, env),
-                                              f->env());
-                    }
-                    else
-                    {
-                        primitive* p = dynamic_cast<primitive*>(fn);
-                        return p->apply(evlist(args, env));
-                    }
-                }
-            }
-        }
-    }
-
-    object* evlist(object* lst, environment* env)
-    {
-        if (is_null(lst))
-        {
-            return NIL();
-        }
-        else if (!is_pair(lst))
-        {
-            return error("illegal arg list: " + stringify(lst));
-        }
-        else
-        {
-            object* x = eval(car(lst), env);
-            return cons(x, evlist(cdr(lst), env));
-        }
     }
 }

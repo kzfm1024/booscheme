@@ -22,6 +22,9 @@ namespace boo
 		object* expand(object* x);
 
 	private:
+		bool match(object* pat, object* x, environment* env);
+		object* substitute(object* tmpl, environment* env);
+
         std::string m_name;
 		object* m_syntax_rules;
     };

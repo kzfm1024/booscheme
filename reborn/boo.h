@@ -45,18 +45,24 @@ namespace boo
     object* second(object* x);
     object* third(object* x);
 
-    object* list(object* a);
-    object* list(object* a, object* b);
+    object* list(object* x);
+    object* list(object* x, object* y);
+	object* eq(object* x, object* y);
+	object* eqv(object* x, object* y);
+	object* equal(object* x, object* y);
     int length(object* x);
 
     bool truth(object* x);
     bool is_null(object* x);
+    bool is_boolean(object* x);
     bool is_pair(object* x);
     bool is_number(object* x);
     bool is_string(object* x);
     bool is_character(object* x);
     bool is_symbol(object* x);
     bool is_symbol(object* x, const std::string& s);
+    bool is_syntax(object* x);
+    bool is_procedure(object* x);
     bool is_procedure(object* x, const std::string& s);
     bool is_closure(object* x);
     bool is_continuation(object* x);

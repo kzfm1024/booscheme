@@ -3,13 +3,11 @@
 //
 
 #include <assert.h>
-#include "environment.h"
-#include "symbol.h"
-#include "procedure.h"
-#include "misc.h"
 #include "boo.h"
+#include "boo_objects.h"
+#include "environment.h"
 
-#include <iostream>
+//#include <iostream>
 
 namespace boo
 {
@@ -32,6 +30,25 @@ namespace boo
 			vars = cdr(vars);
 			vals = cdr(vals);
 		}
+	}
+
+	std::string environment::inspect()
+	{
+		object* vars = NIL();
+		object* vals = NIL();
+
+		std::map<symbol*, object*>::iterator iter = m_map.begin();
+		while (iter != m_map.end())
+		{
+			vars = cons(iter->first, vars);
+			vals = cons(iter->second, vals);
+			++iter;
+		}
+
+		DEBUG("environment::inspect vars", vars);
+		DEBUG("environment::inspect vals", vals);
+
+		return stringify(list(vars, vals), true);
 	}
 
 	object* environment::lookup(symbol* sym)

@@ -21,6 +21,7 @@ namespace boo
 		virtual ~environment() {}
 
 		virtual std::string to_s() { return std::string("#<environment>"); }
+		virtual std::string inspect();
 		
 		object* lookup(symbol* sym);
 		object* define(object* var, object* val);

@@ -100,7 +100,12 @@ namespace boo
                 else
                 {
                     fn = eval(fn, env);
-                    if (is_closure(fn))
+					if (is_syntax(fn))
+					{
+						syntax* synx = dynamic_cast<syntax*>(fn);
+						x = synx->expand(x);
+					}
+                    else if (is_closure(fn))
                     {
                         closure* f = dynamic_cast<closure*>(fn);
                         x = f->body();
